@@ -1,16 +1,16 @@
 ﻿#include "Input.h"
 
-void Input::Initialize(HINSTANCE hInstance,HWND hwnd)
+void Input::Initialize(WinApp* winApp)
 {
+	this->winApp = winApp;
+
 	HRESULT result;
 
 	// DirectInputのインスタンス生成
-	Microsoft::WRL::ComPtr<IDirectInput8> directInput = nullptr;
-	result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+	result = DirectInput8Create(winApp->GetHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(result));
 
 	// キーボードデバイス生成
-	Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboard;
 	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	assert(SUCCEEDED(result));
 
@@ -19,6 +19,34 @@ void Input::Initialize(HINSTANCE hInstance,HWND hwnd)
 	assert(SUCCEEDED(result));
 
 	// 排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = keyboard->SetCooperativeLevel(winApp->GetHWND(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
+}
+
+void Input::Update()
+{
+	HRESULT result;
+
+	// 前回のキー入力を保存
+	memcpy(keyPre, key, sizeof(key));
+
+	// キーボード情報取得
+	result = keyboard->Acquire();
+
+	// 全キーの入力情報を取得する
+	result = keyboard->GetDeviceState(sizeof(key), key);
+}
+
+bool Input::PushKey(BYTE keyNumber)
+{
+	if (key[keyNumber]) {
+		return true;
+	}
+}
+
+bool Input::Triggerkey(BYTE keyNumber)
+{
+	if (!keyPre[keyNumber] && key[keyNumber]) {
+		return true;
+	}
 }
