@@ -17,6 +17,9 @@ using namespace Microsoft::WRL;
 // 入力
 class Input
 {
+public:
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 public: // メンバ変数
 	// 初期化
 	void Initialize(HINSTANCE hInstance,HWND hwnd);
@@ -24,6 +27,17 @@ public: // メンバ変数
 	// 更新
 	void Update();
 
+	bool PushKey(BYTE keyNumber);
+
+	bool Triggerkey(BYTE keyNumber);
 private:
+	// キーボードデバイス
+	ComPtr<IDirectInputDevice8> keyboard;
+
+	ComPtr<IDirectInput8> directInput;
+
+	BYTE key[256] = {};
+
+	BYTE keyPre[256] = {};
 };
 

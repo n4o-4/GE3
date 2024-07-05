@@ -1004,7 +1004,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	input = new Input();
 	input->Initialize(wc.hInstance,hwnd);
 
-	delete input;
+
+
+	/*input->Update();
+	delete input;*/
 
 	//コマンドキューを生成する
 	//ID3D12CommandQueue* commandQueue = nullptr;
@@ -1570,6 +1573,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	MSG msg{};
 	while (msg.message != WM_QUIT)
 	{
+
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
@@ -1587,6 +1591,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			ImGui::DragFloat3("Light Direction", &directionLightData->direction.x,0.01f);
 
 			ImGui::DragFloat3("Plane.Rotate", &transform.rotate.x, 0.01f);
+
+			input->Update();
+
+			int a = 0;
+
+			if (input->PushKey(DIK_RETURN)) {
+				a++;
+
+				Log(std::format("int a :{}", a));
+			}
 
 			/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
