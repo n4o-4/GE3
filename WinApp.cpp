@@ -1,5 +1,7 @@
 ﻿#include "WinApp.h"
 
+#pragma comment(lib,"winmm.lib")
+
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
@@ -19,6 +21,9 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 void WinApp::Initialize()
 {
+	// システムタイマー分解能を上げる
+	timeBeginPeriod(1);
+
 	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	wc.lpfnWndProc = WindowProc;
