@@ -30,9 +30,9 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	materialData->enableLighting = false;
 	materialData->uvTransform = MakeIdentity4x4();
 
-	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
+	/*TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 
-	modelData.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData.material.textureFilePath);
+	modelData.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData.material.textureFilePath);*/
 }
 
 void Model::Draw()
