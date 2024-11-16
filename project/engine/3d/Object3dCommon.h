@@ -5,19 +5,33 @@
 class Object3dCommon
 {
 public: // メンバ関数
+
+	// シングルトンインスタンスの取得
+	static Object3dCommon* GetInstance();
+
 	// 初期化
 	void Initialize(DirectXCommon* dxCommon);
+
+	void Finalize();
 
 	// 共通描画設定
 	void SetView();
 
 	DirectXCommon* GetDxCommon() const { return dxCommon_; }
 
-	void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
+	//void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
 
-	Camera* GetDefaultCamera() const { return defaultCamera_; }
+	Camera* GetDefaultCamera() const { return defaultCamera_.get(); }
 
 private:
+
+	static Object3dCommon* instance;
+
+	Object3dCommon() = default;
+	~Object3dCommon() = default;
+	Object3dCommon(Object3dCommon&) = delete;
+	Object3dCommon& operator=(Object3dCommon&) = delete;
+
 	// グラフィックスパイプラインの生成
 	void CreateGraphicsPipeline();
 
@@ -36,6 +50,6 @@ private: // メンバ変数
 	//ID3DBlob* errorBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;;
 
-	Camera* defaultCamera_ = nullptr;
+	std::unique_ptr<Camera> defaultCamera_ = nullptr;
 };
 

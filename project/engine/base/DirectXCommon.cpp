@@ -240,7 +240,7 @@ inline void DirectXCommon::InitializeRenderTergetView()
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 
 	// RTVを２つ作るのでディスクリプタを２つ用意
-	rtvHandles[3];///////////////
+	rtvHandles[2];///////////////
 
 	// まず１つ目を作る
 	rtvHandles[0] = rtvStartHandle;
