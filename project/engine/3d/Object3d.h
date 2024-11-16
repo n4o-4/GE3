@@ -47,7 +47,7 @@ public: // メンバ関数
 	// setter
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform.rotate = rotation; }
-	void SetTranslatte(const Vector3& translate) { transform.translate = translate; }
+	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 
 	const Vector3& GetScale() { return transform.scale; }
 	const Vector3& GetRotation() { return transform.rotate;}

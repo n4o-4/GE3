@@ -37,6 +37,7 @@ void Object3d::Update()
 		worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
 	}
 	else {
+
 		worldViewProjectionMatrix = worldMatrix;
 	}
 	transformationMatrixData->WVP = worldViewProjectionMatrix;
