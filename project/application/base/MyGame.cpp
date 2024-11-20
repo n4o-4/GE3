@@ -1,5 +1,7 @@
 #include "MyGame.h"
 
+#include "SceneFactory.h"
+
 
 void MyGame::Initialize()
 {
@@ -15,6 +17,12 @@ void MyGame::Initialize()
 	imGuiManager->Initialize(winApp.get(), dxCommon.get());
 
 #endif
+
+	sceneFactory_ = std::make_unique<SceneFactory>();
+
+	SceneManager::GetInstance()->SetSceneFactory(*sceneFactory_);
+
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 
 #pragma endregion 基盤システムの初期化
 

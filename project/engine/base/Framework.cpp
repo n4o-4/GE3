@@ -68,7 +68,6 @@ void Framework::Initialize()
 	*  モデル共通部
 	-----------------------------------*/
 
-
 	modelCommon = std::make_unique<ModelCommon>();
 	modelCommon->Initialize(dxCommon.get());
 

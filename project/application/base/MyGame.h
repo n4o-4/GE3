@@ -1,11 +1,10 @@
 #pragma once
 
-
 #include <dxgidebug.h>
 
 #include "Framework.h"
 
-#include "GameScene.h"
+#include "SceneFactory.h"
 
 // ゲーム全体
 class MyGame : public Framework
@@ -31,4 +30,7 @@ public: //　メンバ関数
 	bool IsEndRequest() override { return endRequest_; }
 
 private:
+
+	std::unique_ptr<AbstaractSceneFactory> sceneFactory_ = nullptr;
+
 };

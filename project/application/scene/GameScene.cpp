@@ -56,6 +56,11 @@ void GameScene::Update()
 	object3d->SetTranslate(translate);
 
 	object3d->Update();
+
+	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
+	{
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
 }
 
 void GameScene::Draw()

@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include <assert.h>
 
 SceneManager* SceneManager::instance = nullptr;
 
@@ -6,7 +7,7 @@ SceneManager* SceneManager::GetInstance()
 {
 	if (instance == nullptr)
 	{
-		instance = new SceneManager();
+		instance =  new SceneManager();
 	}
 
 	return instance;
@@ -14,12 +15,6 @@ SceneManager* SceneManager::GetInstance()
 
 void SceneManager::Initialize()
 {
-
-	scene_ = std::make_unique<TitleScene>();
-
-	scene_->Initialize();
-
-	scene_->SetSceneManager(this);
 }
 
 void SceneManager::Finalize()
@@ -58,4 +53,13 @@ void SceneManager::Draw()
 	// 実行中のシーンの描画
 	scene_->Draw();
 
+}
+
+void SceneManager::ChangeScene(const std::string& sceneName)
+{
+	assert(sceneFactory_);
+	assert(nextScene_ == nullptr);
+
+	// 次のシーン生成
+	nextScene_ = std::move(sceneFactory_->CreateScene(sceneName));
 }
