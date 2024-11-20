@@ -19,7 +19,10 @@ public: // メンバ関数
 
 private:
 
-	static SpriteCommon* instance;
+	static std::unique_ptr<SpriteCommon> instance;
+
+	friend std::unique_ptr<SpriteCommon> std::make_unique<SpriteCommon>();
+	friend std::default_delete<SpriteCommon>;
 
 	SpriteCommon() = default;
 	~SpriteCommon() = default;

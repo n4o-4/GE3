@@ -2,15 +2,15 @@
 
 #include "assert.h"
 
-Audio* Audio::instance = nullptr;
+std::unique_ptr<Audio> Audio::instance = nullptr;
 
 Audio* Audio::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new Audio;
+		instance = std::make_unique<Audio>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void Audio::Initialize()
@@ -26,12 +26,7 @@ void Audio::Initialize()
 }
 void Audio::Finalize()
 {
-
 	SoundUnload();
-
-	delete instance;
-	instance = nullptr;
-
 }
 
 

@@ -2,10 +2,12 @@
 #include <fstream>
 #include <wrl.h>
 #include <xaudio2.h>
+#include <memory>
 
 #include <unordered_map>
 
 #pragma comment(lib,"xaudio2.lib")
+
 
 class Audio {
 
@@ -48,7 +50,10 @@ public:
 
 private:
 
-	static Audio* instance;
+	static std::unique_ptr<Audio> instance;
+
+	friend std::unique_ptr<Audio> std::make_unique<Audio>();
+	friend std::default_delete<Audio>;
 
 	Audio() = default;
 	~Audio() = default;

@@ -12,8 +12,6 @@ void SrvManager::Initialize(DirectXCommon* directXCommon)
 
 	// デスクリプタ1個分のサイズを取得して記録
 	descriptorSize = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	useIndex = 0;
 }
 
 uint32_t SrvManager::Allocate()
@@ -56,6 +54,23 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	directXCommon->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
+void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride)
+{
+
+	// SRV の記述子を設定する
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements = numElements;
+	srvDesc.Buffer.StructureByteStride = structureByteStride;
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファでは通常 UNKNOWN
+
+	// デバイスを使って SRV を作成する
+	directXCommon->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
+}
+
 void SrvManager::PreDraw()
 {
 	// 描画用のDescriptorHeapの設定
@@ -71,9 +86,9 @@ void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_
 bool SrvManager::CheckSrvCount()
 {
 	if (useIndex < kMaxSRVCount) {
-		false;
+		return true;
 	}
 	else {
-		return true;
+		return false;
 	}
 }

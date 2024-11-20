@@ -1,6 +1,9 @@
 #pragma once
 
+#include "BaseScene.h"
+
 #include "audio.h"
+#include "Input.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "TextureManager.h"
@@ -17,7 +20,7 @@ public:
 
 	std::unique_ptr<Sprite> sprite = nullptr;
 
-	std::unique_ptr<Object3d> object3d = nullptr;
+	//std::unique_ptr<Object3d> object3d = nullptr;
 
 	std::unique_ptr<Camera> camera = nullptr;
 

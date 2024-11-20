@@ -2,15 +2,15 @@
 #include "TextureManager.h"
 #include "MyMath.h"
 
-ParticleManager* ParticleManager::instance = nullptr;
+std::unique_ptr<ParticleManager> ParticleManager::instance = nullptr;
 
 ParticleManager* ParticleManager::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new ParticleManager();
+		instance = std::make_unique<ParticleManager>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,Camera* camera)
@@ -75,9 +75,9 @@ void ParticleManager::Update()
 
 
 
-	Matrix4x4 viewMatrix = camera_->GetViewMatrix();
+	Matrix4x4 viewMatrix = camera_->GetViewProjection().matView_;
 
-	Matrix4x4 projectionMatrix = camera_->GetProjectionMatrix();
+	Matrix4x4 projectionMatrix = camera_->GetViewProjection().matProjection_;
 
 	for (std::unordered_map<std::string, ParticleGroup>::iterator particleGroupIterator = particleGroups.begin(); particleGroupIterator != particleGroups.end();) {
 
@@ -470,7 +470,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 
 		// インスタンシング用にSRVを確保してSRVインデックスを記録
 
-		D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
+		/*D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
 		instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
@@ -479,14 +479,17 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 		instancingSrvDesc.Buffer.NumElements = kNumMaxInstance;
 		instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 
-		newParticleGroup.srvIndex = srvManager_->Allocate();
+		
 
 		D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = srvManager_->GetCPUDescriptorHandle(newParticleGroup.srvIndex);
 
-		dxCommon_->GetDevice()->CreateShaderResourceView(newParticleGroup.instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
+		dxCommon_->GetDevice()->CreateShaderResourceView(newParticleGroup.instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);*/
+
+		newParticleGroup.srvIndex = srvManager_->Allocate();
+
+		srvManager_->CreateSRVforStructuredBuffer(newParticleGroup.srvIndex, newParticleGroup.instancingResource.Get(), kNumMaxInstance, sizeof(ParticleForGPU));
 
 		particleGroups[name] = newParticleGroup;
-
 	}
 }
 
@@ -552,7 +555,6 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, uint
 void ParticleManager::Finalize()
 {
 
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 
 }

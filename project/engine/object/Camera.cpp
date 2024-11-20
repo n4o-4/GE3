@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-	transform = { { 1.0f,1.0f,1.0f },{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
+	/*transform = { { 1.0f,1.0f,1.0f },{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	fovY = 0.45f;
 	aspectRation = static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight);
 	nearClip = 0.1f;
@@ -11,18 +11,14 @@ Camera::Camera()
 	worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	viewMatrix = Inverse(worldMatrix);
 	projectionMatrix = MakePerspectiveFovMatrix(fovY, aspectRation, nearClip, farClip);
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);*/
+
+	viewProjection.Initialize();
 }
 
 void Camera::Update()
 {
-	//transform = { { 1.0f,1.0f,1.0f },{0.3f,0.0f,0.0f},{0.0f,2.0f,-10.0f} };
+	worldMatrix = MakeAffineMatrix(viewProjection.transform.scale, viewProjection.transform.rotate, viewProjection.transform.translate);
 
-	worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-
-	viewMatrix = Inverse(worldMatrix);
-
-	projectionMatrix = MakePerspectiveFovMatrix(fovY, aspectRation, nearClip, farClip);
-
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+	viewProjection.Update();
 }

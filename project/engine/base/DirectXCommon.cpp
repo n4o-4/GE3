@@ -6,18 +6,19 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
-//const uint32_t DirectXCommon::kMaxSRVCount = 512;
+#include "Logger.h"
 
+std::unique_ptr<DirectXCommon> DirectXCommon::instance = nullptr;
 
-DirectXCommon::~DirectXCommon()
+DirectXCommon* DirectXCommon::GetInstance()
 {
+	if (instance == nullptr) {
+		instance = std::make_unique<DirectXCommon>();
+	}
 
-	//Microsoft::WRL::ComPtr<ID3D12DebugDevice> debugDevice;
-	//if (SUCCEEDED(device.As(&debugDevice))) {
-	//	debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL);
-	//}
-
+	return instance.get();
 }
+
 
 void DirectXCommon::Initialize(WinApp* winApp)
 {
@@ -38,6 +39,11 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	Scissor();
 	CreateDXCCompiler();
 	InitializeImGui();
+}
+
+void DirectXCommon::Finalize()
+{
+	instance.reset();
 }
 
 void DirectXCommon::InitializeDevice()
@@ -470,6 +476,8 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(const std::wstring
 		IID_PPV_ARGS(&shaderResult)
 	);
 
+	assert(shaderResult != nullptr);
+
 	// コンパイルエラーでなくdxcが起動出来ないなど致命的な状況
 	assert(SUCCEEDED(hr));
 
@@ -478,7 +486,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(const std::wstring
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0)
 	{
-		//Log(shaderError->GetStringPointer());
+		Logger::Log(shaderError->GetStringPointer());
 
 		// 警告・エラー
 		assert(false);

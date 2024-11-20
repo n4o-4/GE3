@@ -1,5 +1,4 @@
 #include "TitleScene.h"
-#include "Input.h"
 
 void TitleScene::Initialize()
 {
@@ -27,13 +26,13 @@ void TitleScene::Initialize()
 
 	camera = std::make_unique<Camera>();
 
-	object3d = std::make_unique<Object3d>();
+	/*object3d = std::make_unique<Object3d>();
 
 	object3d->Initialize(Object3dCommon::GetInstance());
 
 	object3d->SetModel("axis.obj");
 
-	object3d->SetCamera(camera.get());
+	object3d->SetCamera(camera.get());*/
 }
 
 void TitleScene::Finalize()
@@ -44,9 +43,7 @@ void TitleScene::Update()
 {
 	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
 	{
-		std::unique_ptr<BaseScene> scene = std::make_unique<GameScene>();
-
-		sceneManager_->SetNextScene(std::move(scene));
+		SceneManager::GetInstance()->ChangeScene("GAME");
 
 		return;
 	}
@@ -57,7 +54,7 @@ void TitleScene::Update()
 
 	sprite->Update();
 
-	Vector3 rotato = object3d->GetRotation();
+	/*Vector3 rotato = object3d->GetRotation();
 
 	rotato.y += 0.02f;
 
@@ -69,7 +66,7 @@ void TitleScene::Update()
 
 	object3d->SetTranslate(translate);
 
-	object3d->Update();
+	object3d->Update();*/
 }
 
 void TitleScene::Draw()

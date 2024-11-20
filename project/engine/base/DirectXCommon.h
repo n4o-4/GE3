@@ -22,9 +22,12 @@
 class DirectXCommon
 {
 public:
-	~DirectXCommon();
+	// シングルトンインスタンスの取得
+	static DirectXCommon* GetInstance();
 
 	void Initialize(WinApp* winApp);
+
+	void Finalize();
 
 	// デバイス初期化
 	void InitializeDevice();
@@ -179,6 +182,17 @@ private: // メンバ関数
 	void UpdateFixFPS();
 
 private:
+
+	static std::unique_ptr<DirectXCommon> instance;
+
+	friend std::unique_ptr<DirectXCommon> std::make_unique<DirectXCommon>();
+	friend std::default_delete<DirectXCommon>;
+
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
+	DirectXCommon(DirectXCommon&) = delete;
+	DirectXCommon& operator=(DirectXCommon&) = delete;
+
 	// WindowAPI
 	WinApp* winApp = nullptr;
 

@@ -1,5 +1,7 @@
 #include "MyGame.h"
 
+#include "SceneFactory.h"
+
 
 void MyGame::Initialize()
 {
@@ -12,9 +14,15 @@ void MyGame::Initialize()
 #ifdef _DEBUG
 	
 	imGuiManager = std::make_unique<ImGuiManager>();
-	imGuiManager->Initialize(winApp.get(), dxCommon.get());
+	imGuiManager->Initialize(winApp.get(), DirectXCommon::GetInstance());
 
 #endif
+
+	sceneFactory_ = std::make_unique<SceneFactory>();
+
+	SceneManager::GetInstance()->SetSceneFactory(*sceneFactory_);
+
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 
 #pragma endregion 基盤システムの初期化
 
@@ -34,11 +42,17 @@ void MyGame::Finalize()
 void MyGame::Update()
 {
 
-	Framework::Update();
+	
 
 #ifdef _DEBUG
 
 	imGuiManager->Begin();
+
+#endif
+
+	Framework::Update();
+
+#ifdef _DEBUG
 
 	imGuiManager->End();
 
@@ -53,7 +67,7 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
-	dxCommon->PreDraw();
+	DirectXCommon::GetInstance()->PreDraw();
 
 	srvManager->PreDraw();
 
@@ -64,10 +78,10 @@ void MyGame::Draw()
 
 #ifdef _DEBUG
 
-	imGuiManager->Draw(dxCommon.get());
+	imGuiManager->Draw(DirectXCommon::GetInstance());
 
 #endif
 
-	dxCommon->PostDraw();
+	DirectXCommon::GetInstance()->PostDraw();
 
 }

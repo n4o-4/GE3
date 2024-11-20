@@ -23,7 +23,10 @@ public:
 	Model* FindModel(const std::string& filePath);
 
 private:
-	static ModelManager* instance;
+	static std::unique_ptr<ModelManager> instance;
+
+	friend std::unique_ptr<ModelManager> std::make_unique<ModelManager>();
+	friend std::default_delete<ModelManager>;
 
 	ModelManager() = default;
 	~ModelManager() = default;
@@ -34,6 +37,6 @@ private:
 	// モデルデータ
 	std::map<std::string, std::unique_ptr<Model>> models;
 
-	ModelCommon* modelCommon = nullptr;
+	std::unique_ptr<ModelCommon> modelCommon = nullptr;
 };
 

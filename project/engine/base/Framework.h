@@ -20,6 +20,8 @@
 #include "ImGuiManager.h"
 #include "BaseScene.h"
 #include "SceneManager.h"
+#include "AbstractSceneFactory.h"
+
 
 class Framework
 {
@@ -28,8 +30,6 @@ public:
 protected:
 
 	std::unique_ptr<WinApp> winApp = nullptr;
-
-	std::unique_ptr<DirectXCommon> dxCommon = nullptr;
 
 	std::unique_ptr<SrvManager> srvManager = nullptr;
 
@@ -41,6 +41,7 @@ protected:
 
 	std::unique_ptr<ImGuiManager> imGuiManager = nullptr;
 
+	std::unique_ptr<AbstaractSceneFactory> sceneFactory_ = nullptr;
 
 	bool endRequest_ = false;
 

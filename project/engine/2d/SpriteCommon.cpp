@@ -1,14 +1,14 @@
 ﻿#include "SpriteCommon.h"
 
-SpriteCommon* SpriteCommon::instance = nullptr;
+std::unique_ptr<SpriteCommon> SpriteCommon::instance = nullptr;
 
 SpriteCommon* SpriteCommon::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new SpriteCommon;
+		instance = std::make_unique<SpriteCommon>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void SpriteCommon::Initialize(DirectXCommon* dxCommon)
@@ -22,8 +22,7 @@ void SpriteCommon::Initialize(DirectXCommon* dxCommon)
 void SpriteCommon::Finalize()
 {
 
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 
 }
 
@@ -56,6 +55,7 @@ void SpriteCommon::CreateRootSignature()
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;   //CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;  //PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;    // レジスタ番号0とバインド
+
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters[1].Descriptor.ShaderRegister = 0;
@@ -143,10 +143,10 @@ void SpriteCommon::CreateGraphicsPipeline()
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをコンパイルする
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Sprite.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Sprite.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	// DepthStencilStateの設定

@@ -9,6 +9,9 @@
 #include "ModelManager.h"
 #include "Camera.h"
 
+#include "WorldTransform.h"
+#include "ViewProjection.h"
+
 class Object3d
 {
 private:
@@ -22,7 +25,6 @@ private:
 
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
-		Matrix4x4 World;
 	};
 
 	struct DirectionLight {
@@ -40,7 +42,7 @@ public: // メンバ関数
 	void Update();
 
 	// 描画
-	void Draw();
+	void Draw(WorldTransform worldTransform,ViewProjection viewProjection);
 
 	void SetModel(const std::string& filePath);
 

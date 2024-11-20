@@ -15,8 +15,7 @@ void Framework::Initialize()
 	* DirectXCommonの生成と初期化
 	-----------------------------------*/
 
-	dxCommon = std::make_unique<DirectXCommon>();
-	dxCommon->Initialize(winApp.get());
+	DirectXCommon::GetInstance()->Initialize(winApp.get());
 
 	/*-----------------------------------
 	* Audioの初期化
@@ -36,13 +35,13 @@ void Framework::Initialize()
 
 
 	srvManager = std::make_unique<SrvManager>();
-	srvManager->Initialize(dxCommon.get());
+	srvManager->Initialize(DirectXCommon::GetInstance());
 
 	/*-----------------------------------
 	* TextureManagerの初期化
 	-----------------------------------*/
 
-	TextureManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get());
+	TextureManager::GetInstance()->Initialize(DirectXCommon::GetInstance(), srvManager.get());
 
 	/*-----------------------------------
 	* SpriteCommonの生成と初期化
@@ -50,8 +49,7 @@ void Framework::Initialize()
 	*  スプライト共通部
 	-----------------------------------*/
 
-
-	SpriteCommon::GetInstance()->Initialize(dxCommon.get());
+	SpriteCommon::GetInstance()->Initialize(DirectXCommon::GetInstance());
 
 	/*-----------------------------------
 	* Object3dCommonの生成と初期化
@@ -60,7 +58,7 @@ void Framework::Initialize()
 	-----------------------------------*/
 
 
-	Object3dCommon::GetInstance()->Initialize(dxCommon.get());
+	Object3dCommon::GetInstance()->Initialize(DirectXCommon::GetInstance());
 
 	/*-----------------------------------
 	* ModelCommonの生成と初期化
@@ -68,15 +66,14 @@ void Framework::Initialize()
 	*  モデル共通部
 	-----------------------------------*/
 
-
 	modelCommon = std::make_unique<ModelCommon>();
-	modelCommon->Initialize(dxCommon.get());
+	modelCommon->Initialize(DirectXCommon::GetInstance());
 
 	/*-----------------------------------
 	* ModelManagerの初期化
 	-----------------------------------*/
 
-	ModelManager::GetInstance()->Initialize(dxCommon.get());
+	ModelManager::GetInstance()->Initialize(DirectXCommon::GetInstance());
 
 	/*-----------------------------------
 	* Cameraの初期化
@@ -88,7 +85,7 @@ void Framework::Initialize()
 	* ParticleManagerの初期化
 	-----------------------------------*/
 
-	ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get(), camera.get());
+	ParticleManager::GetInstance()->Initialize(DirectXCommon::GetInstance(), srvManager.get(), camera.get());
 	ParticleManager::GetInstance()->CreateParticleGroup("particle", "Resources/circle.png");
 
 	/*-----------------------------------
@@ -106,21 +103,23 @@ void Framework::Initialize()
 void Framework::Finalize()
 {
 
-	SceneManager::GetInstance()->Finalize();
+	SceneManager::GetInstance()->Finalize(); ///
 
-	ParticleManager::GetInstance()->Finalize();
+	ParticleManager::GetInstance()->Finalize(); ///
 
-	ModelManager::GetInstance()->Finalize();
+	ModelManager::GetInstance()->Finalize(); ///
 
-	Object3dCommon::GetInstance()->Finalize();
+	Object3dCommon::GetInstance()->Finalize(); ///
 
-	SpriteCommon::GetInstance()->Finalize();
+	SpriteCommon::GetInstance()->Finalize(); ///
 
-	TextureManager::GetInstance()->Finalize();
+	TextureManager::GetInstance()->Finalize(); ///
 
-	Input::GetInstance()->Finalize();
+	Input::GetInstance()->Finalize(); //
 
-	Audio::GetInstance()->Finalize();
+	Audio::GetInstance()->Finalize(); //
+
+	DirectXCommon::GetInstance()->Finalize();
 
 	winApp->Finalize();
 

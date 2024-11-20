@@ -36,7 +36,10 @@ public:
 	const DirectX::TexMetadata& GetMetaData(std::string filePath);
 
 private:
-	static TextureManager* instance;
+	static std::unique_ptr<TextureManager> instance;
+
+	friend std::unique_ptr<TextureManager> std::make_unique<TextureManager>();
+	friend std::default_delete<TextureManager>;
 
 	TextureManager() = default;
 	~TextureManager() = default;
@@ -46,7 +49,6 @@ private:
 private:
 	// テクスチャー1枚分のデータ
 	struct TextureData {
-		std::string filePath;
 		DirectX::TexMetadata metadata;
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
 		uint32_t srvIndex;

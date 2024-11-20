@@ -13,7 +13,6 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 
 	//　単位行列を書き込んでおく
 	transformationMatrixData->WVP = MakeIdentity4x4();
-	transformationMatrixData->World = MakeIdentity4x4();
 
 	directionLightResource = this->object3dCommon->GetDxCommon()->CreateBufferResource(sizeof(DirectionLight));
 	directionLightResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&directionLightData));
@@ -33,22 +32,22 @@ void Object3d::Update()
 	Matrix4x4 worldViewProjectionMatrix;
 
 	if (camera) {
-		const Matrix4x4& viewProjectionMatrix = camera->GetViewProjectionMatrix();
-		worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+		
 	}
 	else {
 
 		worldViewProjectionMatrix = worldMatrix;
 	}
-	transformationMatrixData->WVP = worldViewProjectionMatrix;
-	transformationMatrixData->World = worldMatrix;
+	//transformationMatrixData->WVP = worldViewProjectionMatrix;
 }
 
-void Object3d::Draw()
+void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection)
 {
-	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationResource.Get()->GetGPUVirtualAddress());
+	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, viewProjection.GetViewProjectionResource()->GetGPUVirtualAddress());
 	
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionLightResource.Get()->GetGPUVirtualAddress());
+
+	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, worldTransform.GetTransformResource()->GetGPUVirtualAddress());
 
 	if (model) {
 		model->Draw();

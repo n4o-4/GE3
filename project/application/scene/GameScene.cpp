@@ -1,5 +1,7 @@
 #include "GameScene.h"
 
+#include "imgui.h"
+
 void GameScene::Initialize()
 {
 
@@ -28,6 +30,10 @@ void GameScene::Initialize()
 	object3d->SetModel("axis.obj");
 
 	object3d->SetCamera(camera.get());
+
+	objectTransform = std::make_unique<WorldTransform>();
+	objectTransform->Initialize();
+
 }
 
 void GameScene::Finalize()
@@ -37,36 +43,39 @@ void GameScene::Finalize()
 void GameScene::Update()
 {
 
-	camera->SetTranslate({ 0.0f,0.0f,-15.0f });
+	//camera->SetTranslate({ 0.0f,0.0f,-15.0f });
 
 	camera->Update();
 
 	sprite->Update();
 
-	Vector3 rotato = object3d->GetRotation();
+	//objectTransform->transform.rotate.y += 0.01f;
 
-	rotato.y += 0.02f;
+	Vector3 translate = camera->GetTranslate();
 
-	object3d->SetRotation(rotato);
-	
-	Vector3 translate = object3d->GetTranslate();
+	ImGui::DragFloat3("cameraTranslate", &translate.x, 0.02f);
 
-	translate.z += 0.1f;
-
-	object3d->SetTranslate(translate);
+	camera->SetTranslate(translate);
 
 	object3d->Update();
+
+	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
+	{
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
 }
 
 void GameScene::Draw()
 {
 
-	Object3dCommon::GetInstance()->SetView();
-
-	object3d->Draw();
-
 	SpriteCommon::GetInstance()->SetView();
 
 	sprite->Draw();
+
+	Object3dCommon::GetInstance()->SetView();
+
+	objectTransform->UpdateMatrix();
+
+	object3d->Draw(*objectTransform.get(),camera->GetViewProjection());
 
 }

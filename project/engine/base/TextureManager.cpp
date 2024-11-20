@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-TextureManager* TextureManager::instance = nullptr;
+std::unique_ptr<TextureManager> TextureManager::instance = nullptr;
 
 // ImGuiで0番目を使用するため、1晩から使用
 uint32_t TextureManager::kSRVIndexTop = 1;
@@ -8,10 +8,10 @@ uint32_t TextureManager::kSRVIndexTop = 1;
 TextureManager* TextureManager::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new TextureManager;
+		instance = std::make_unique<TextureManager>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void TextureManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
@@ -26,15 +26,19 @@ void TextureManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 
 void TextureManager::Finalize()
 {
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
 {
 
-	if (textureDatas.find(filePath) != textureDatas.end()) {
+	/*if (textureDatas.find(filePath) != textureDatas.end()) {
 		return;
+	}*/
+
+	if (textureDatas.contains(filePath))
+	{
+
 	}
 
 	assert(srvManager_->CheckSrvCount());
@@ -62,7 +66,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	// 追加したテクスチャデータの参照を取得する
 	//TextureData& textureData = textureDatas.back();
 
-	textureData.filePath = filePath;
+	//textureData.filePath = filePath;
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 
@@ -78,14 +82,16 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	textureData.srvHandleCPU = srvManager_->GetCPUDescriptorHandle(textureData.srvIndex);
 	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = textureData.metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels); 
+	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, textureData.metadata.mipLevels);
 
-	// SRVの生成
-	dxCommon_->GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
+	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	//srvDesc.Format = textureData.metadata.format;
+	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels); 
+
+	//// SRVの生成
+	//dxCommon_->GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
 }
 
 uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)

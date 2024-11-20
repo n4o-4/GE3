@@ -1,14 +1,14 @@
 #include "Object3dCommon.h"
 
-Object3dCommon* Object3dCommon::instance = nullptr;
+std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
 
 Object3dCommon* Object3dCommon::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new Object3dCommon;
+		instance =  std::make_unique<Object3dCommon>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void Object3dCommon::Initialize(DirectXCommon* dxCommon)
@@ -20,8 +20,7 @@ void Object3dCommon::Initialize(DirectXCommon* dxCommon)
 
 void Object3dCommon::Finalize()
 {
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 }
 
 void Object3dCommon::SetView()
@@ -49,10 +48,11 @@ void Object3dCommon::CreateRootSignature()
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
 	// RootParameter作成
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;   //CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;  //PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;    // レジスタ番号0とバインド
+
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters[1].Descriptor.ShaderRegister = 0;
@@ -67,6 +67,9 @@ void Object3dCommon::CreateRootSignature()
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[3].Descriptor.ShaderRegister = 1;
 
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters[4].Descriptor.ShaderRegister = 1;
 
 	descriptionRootSignature.pParameters = rootParameters;  // ルートパラメーター配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);  // 配列の長さ

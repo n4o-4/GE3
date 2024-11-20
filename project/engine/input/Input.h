@@ -11,7 +11,7 @@
 
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
-
+#include <memory>
 #include "WinApp.h"
 
 using namespace Microsoft::WRL;
@@ -40,7 +40,10 @@ public: // メンバ変数
 	bool Triggerkey(BYTE keyNumber);
 private:
 
-	static Input* instance;
+	static std::unique_ptr<Input> instance;
+
+	friend std::unique_ptr<Input> std::make_unique<Input>();
+	friend std::default_delete<Input>;
 
 	Input() = default;
 	~Input() = default;
