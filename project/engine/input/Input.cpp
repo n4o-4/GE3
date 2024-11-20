@@ -1,14 +1,14 @@
 ﻿#include "Input.h"
 
-Input* Input::instance = nullptr;
+std::unique_ptr<Input> Input::instance = nullptr;
 
 Input* Input::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new Input;
+		instance = std::make_unique<Input>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void Input::Initialize(WinApp* winApp)
@@ -36,8 +36,7 @@ void Input::Initialize(WinApp* winApp)
 
 void Input::Finalize()
 {
-	delete instance;
-	instance = nullptr;
+	
 }
 
 void Input::Update()

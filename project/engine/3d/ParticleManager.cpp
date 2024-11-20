@@ -2,15 +2,15 @@
 #include "TextureManager.h"
 #include "MyMath.h"
 
-ParticleManager* ParticleManager::instance = nullptr;
+std::unique_ptr<ParticleManager> ParticleManager::instance = nullptr;
 
 ParticleManager* ParticleManager::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new ParticleManager();
+		instance = std::make_unique<ParticleManager>();
 	}
 
-	return instance;
+	return instance.get();
 }
 
 void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,Camera* camera)
@@ -552,7 +552,6 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, uint
 void ParticleManager::Finalize()
 {
 
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 
 }

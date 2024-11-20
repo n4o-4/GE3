@@ -25,7 +25,10 @@ public: // メンバ関数
 
 private:
 
-	static Object3dCommon* instance;
+	static std::unique_ptr<Object3dCommon> instance;
+
+	friend std::unique_ptr<Object3dCommon> std::make_unique<Object3dCommon>();
+	friend std::default_delete<Object3dCommon>;
 
 	Object3dCommon() = default;
 	~Object3dCommon() = default;

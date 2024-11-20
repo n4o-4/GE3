@@ -1,6 +1,9 @@
 #pragma once
 
+#include "BaseScene.h"
+
 #include "audio.h"
+#include "Input.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "TextureManager.h"
@@ -9,7 +12,7 @@
 #include "Camera.h"
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
-#include "BaseScene.h"
+#include "SceneManager.h"
 
 class GameScene : public BaseScene
 {

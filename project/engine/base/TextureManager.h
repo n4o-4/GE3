@@ -36,7 +36,10 @@ public:
 	const DirectX::TexMetadata& GetMetaData(std::string filePath);
 
 private:
-	static TextureManager* instance;
+	static std::unique_ptr<TextureManager> instance;
+
+	friend std::unique_ptr<TextureManager> std::make_unique<TextureManager>();
+	friend std::default_delete<TextureManager>;
 
 	TextureManager() = default;
 	~TextureManager() = default;

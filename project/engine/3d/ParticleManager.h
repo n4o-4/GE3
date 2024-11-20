@@ -94,7 +94,10 @@ public:
 	void Finalize();
 
 private:
-	static ParticleManager* instance;
+	static std::unique_ptr<ParticleManager> instance;
+
+	friend std::unique_ptr<ParticleManager> std::make_unique<ParticleManager>();
+	friend std::default_delete<ParticleManager>;
 
 	ParticleManager() = default;
 	~ParticleManager() = default;

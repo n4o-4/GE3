@@ -68,7 +68,6 @@ void Framework::Initialize()
 	*  モデル共通部
 	-----------------------------------*/
 
-
 	modelCommon = std::make_unique<ModelCommon>();
 	modelCommon->Initialize(dxCommon.get());
 
@@ -106,21 +105,21 @@ void Framework::Initialize()
 void Framework::Finalize()
 {
 
-	SceneManager::GetInstance()->Finalize();
+	SceneManager::GetInstance()->Finalize(); ///
 
-	ParticleManager::GetInstance()->Finalize();
+	ParticleManager::GetInstance()->Finalize(); ///
 
-	ModelManager::GetInstance()->Finalize();
+	ModelManager::GetInstance()->Finalize(); ///
 
-	Object3dCommon::GetInstance()->Finalize();
+	Object3dCommon::GetInstance()->Finalize(); ///
 
-	SpriteCommon::GetInstance()->Finalize();
+	SpriteCommon::GetInstance()->Finalize(); ///
 
-	TextureManager::GetInstance()->Finalize();
+	TextureManager::GetInstance()->Finalize(); ///
 
-	Input::GetInstance()->Finalize();
+	Input::GetInstance()->Finalize(); //
 
-	Audio::GetInstance()->Finalize();
+	Audio::GetInstance()->Finalize(); //
 
 	winApp->Finalize();
 

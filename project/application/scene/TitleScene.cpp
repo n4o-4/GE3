@@ -1,5 +1,4 @@
 #include "TitleScene.h"
-#include "Input.h"
 
 void TitleScene::Initialize()
 {
@@ -44,9 +43,7 @@ void TitleScene::Update()
 {
 	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
 	{
-		std::unique_ptr<BaseScene> scene = std::make_unique<GameScene>();
-
-		sceneManager_->SetNextScene(std::move(scene));
+		SceneManager::GetInstance()->ChangeScene("GAME");
 
 		return;
 	}

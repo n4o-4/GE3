@@ -1,6 +1,9 @@
 #pragma once
 
+#include "BaseScene.h"
+
 #include "audio.h"
+#include "Input.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "TextureManager.h"
