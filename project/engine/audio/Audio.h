@@ -76,6 +76,7 @@ public:
 	// 音声再生
 	void SoundPlayWave(const char* filename);
 	
+	void SoundStop(const char* filename);
 
 private:
 

@@ -26,9 +26,15 @@ void ViewProjection::Initialize()
 
 void ViewProjection::Update()
 {
-	matView_ = Inverse(MakeAffineMatrix(transform.scale, transform.rotate, transform.translate));
+	worldPosition_ = transform.translate;
+
+	matWorld_ = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+
+	matView_ = Inverse(matWorld_);
 
 	matProjection_ = MakePerspectiveFovMatrix(fovY, aspectRation, nearClip, farClip);
+
+	viewProjectionData_->worldPosition = worldPosition_;
 
 	viewProjectionData_->matView = matView_;
 
