@@ -17,7 +17,7 @@
 //#include "externals/imgui/imgui_impl_dx12.h"
 //#include "externals/imgui/imgui_impl_win32.h"
 #include "externals/DirectXTex/DirectXTex.h"
-
+#include <dxgidebug.h>
 
 class DirectXCommon
 {

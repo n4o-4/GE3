@@ -1,5 +1,6 @@
 #include "Framework.h"
 
+#include "LeakChecker.h"
 
 void Framework::Initialize()
 {
@@ -117,7 +118,7 @@ void Framework::Finalize()
 
 	Input::GetInstance()->Finalize(); //
 
-	Audio::GetInstance()->Finalize(); //
+	//Audio::GetInstance()->Finalize(); //
 
 	DirectXCommon::GetInstance()->Finalize();
 

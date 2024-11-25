@@ -14,6 +14,8 @@ struct DirectionLight
     float intensity;
 };
 
+
+
 ConstantBuffer<Material> gMaterial : register(b0);
 
 //ConstantBuffer<DirectionLight> gDirectionalLight : register(b1);

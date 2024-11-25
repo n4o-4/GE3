@@ -9,6 +9,8 @@ void GameScene::Initialize()
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
 
+	//TextureManager::GetInstance()->LoadTexture("Resources/white1x1.png");
+
 	Audio::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
 
 	Audio::GetInstance()->SoundPlayWave("Resources/Alarm01.wav");
@@ -19,7 +21,7 @@ void GameScene::Initialize()
 
 	sprite->SetTexSize({ 512.0f,512.0f });
 
-	ModelManager::GetInstance()->LoadModel("axis.obj");
+	ModelManager::GetInstance()->LoadModel("terrain.obj");
 
 	camera = std::make_unique<Camera>();
 
@@ -27,21 +29,26 @@ void GameScene::Initialize()
 
 	object3d->Initialize(Object3dCommon::GetInstance());
 
-	object3d->SetModel("axis.obj");
+	object3d->SetModel("terrain.obj");
 
 	object3d->SetCamera(camera.get());
 
 	objectTransform = std::make_unique<WorldTransform>();
 	objectTransform->Initialize();
 
+	pointLight = std::make_unique<PointLight>();
+	pointLight->Initilize();
 }
 
 void GameScene::Finalize()
 {
+	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
 }
 
 void GameScene::Update()
 {
+
+	pointLight->Update();
 
 	//camera->SetTranslate({ 0.0f,0.0f,-15.0f });
 
@@ -53,9 +60,29 @@ void GameScene::Update()
 
 	Vector3 translate = camera->GetTranslate();
 
-	ImGui::DragFloat3("cameraTranslate", &translate.x, 0.02f);
+	ImGui::DragFloat3("cameraTranslate", &translate.x, 0.01f);
 
 	camera->SetTranslate(translate);
+
+	Vector3 rotate = camera->GetRotate();
+
+	ImGui::DragFloat3("cameraRotate", &rotate.x, 0.01f);
+
+	camera->SetRotate(rotate);
+	
+	ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x,0.01f);
+
+	ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+
+	ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
+
+	ImGui::DragFloat3("pointLight.position", &pointLight->position_.x, 0.01f);
+
+	ImGui::DragFloat("pointLight.decay", &pointLight->decay_, 0.01f);
+
+	ImGui::DragFloat("pointLight.radius", &pointLight->radius_, 0.01f);
+
+	ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
 
 	object3d->Update();
 
@@ -70,12 +97,12 @@ void GameScene::Draw()
 
 	SpriteCommon::GetInstance()->SetView();
 
-	sprite->Draw();
+	//sprite->Draw();
 
 	Object3dCommon::GetInstance()->SetView();
 
 	objectTransform->UpdateMatrix();
 
-	object3d->Draw(*objectTransform.get(),camera->GetViewProjection());
+	object3d->Draw(*objectTransform.get(),camera->GetViewProjection(),*pointLight.get());
 
 }
