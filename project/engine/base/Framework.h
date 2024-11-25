@@ -22,6 +22,7 @@
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 
+#include "LeakChecker.h"
 
 class Framework
 {

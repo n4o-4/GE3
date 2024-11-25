@@ -37,6 +37,9 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
+
+	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
+
 }
 
 void TitleScene::Update()

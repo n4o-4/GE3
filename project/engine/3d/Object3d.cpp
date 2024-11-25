@@ -33,6 +33,7 @@ void Object3d::Update()
 
 	if (camera) {
 		
+
 	}
 	else {
 
