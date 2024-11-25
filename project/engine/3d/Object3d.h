@@ -25,6 +25,7 @@ private:
 
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
+	
 	};
 
 	struct DirectionLight {

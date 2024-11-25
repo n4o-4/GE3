@@ -9,6 +9,8 @@ void GameScene::Initialize()
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
 
+	//TextureManager::GetInstance()->LoadTexture("Resources/white1x1.png");
+
 	Audio::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
 
 	Audio::GetInstance()->SoundPlayWave("Resources/Alarm01.wav");
@@ -19,7 +21,7 @@ void GameScene::Initialize()
 
 	sprite->SetTexSize({ 512.0f,512.0f });
 
-	ModelManager::GetInstance()->LoadModel("axis.obj");
+	ModelManager::GetInstance()->LoadModel("sphere.obj");
 
 	camera = std::make_unique<Camera>();
 
@@ -27,7 +29,7 @@ void GameScene::Initialize()
 
 	object3d->Initialize(Object3dCommon::GetInstance());
 
-	object3d->SetModel("axis.obj");
+	object3d->SetModel("sphere.obj");
 
 	object3d->SetCamera(camera.get());
 
@@ -38,6 +40,7 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
+	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
 }
 
 void GameScene::Update()
@@ -56,6 +59,12 @@ void GameScene::Update()
 	ImGui::DragFloat3("cameraTranslate", &translate.x, 0.02f);
 
 	camera->SetTranslate(translate);
+	
+	ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x,0.01f);
+
+	ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+
+	ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
 
 	object3d->Update();
 
@@ -70,7 +79,7 @@ void GameScene::Draw()
 
 	SpriteCommon::GetInstance()->SetView();
 
-	sprite->Draw();
+	//sprite->Draw();
 
 	Object3dCommon::GetInstance()->SetView();
 

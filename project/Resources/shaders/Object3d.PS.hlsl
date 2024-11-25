@@ -5,6 +5,8 @@ struct Material
     float4 color;
     int enableLighting;
     float4x4 uvTransform;
+    float shininess;
+    float3 specularColor;
 };
 
 struct DirectionLight
@@ -35,11 +37,49 @@ PixelShaderOutput main(VertexShaderOutput input)
     
     if (gMaterial.enableLighting != 0)
     {
+        float3 toEye = normalize(input.cameraPosition - input.worldPosition);
+        
+         // Phong Reflection«««««««««««««««««««««««««««««««««««««««««««««««««««««««
+        
+        //float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+        
+        //float RdotE = dot(reflectLight, toEye);
+        
+        //float specularPow = pow(saturate(RdotE), gMaterial.shininess);
+        
+        // Phong Reflectionªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
+        
+        
+        
+        // BlinnPhong Reflection«««««««««««««««««««««««««««««««««««««««««««««««««««««««
+
+        float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+        
+        float NDotH = dot(normalize(input.normal), halfVector);
+        
+        float specularPow = pow(saturate(NDotH), gMaterial.shininess);
+        
+        // BlinnPhong Reflectionªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
+        
+       
+        
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
         
-        output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;  
+        //output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;  
+        
+        
+        
+        // ŠgU”½Ë
+        float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+        
+        // ‹¾–Ê”½Ë
+        float3 specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * gMaterial.specularColor;
+        
+        output.color.rgb = diffuse + specular;
+        
+        output.color.a = gMaterial.color.a * textureColor.a;
     }
     else
     {
