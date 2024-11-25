@@ -26,6 +26,8 @@ void Audio::Initialize()
 }
 void Audio::Finalize()
 {
+	pSourceVoice->Stop();
+
 	SoundUnload();
 }
 
@@ -182,4 +184,24 @@ void Audio::SoundPlayWave(const char* filename)
 
 
 	assert(0);
+}
+
+void Audio::SoundStop(const char* filename)
+{
+
+	if (soundDatas.find(filename) != soundDatas.end())
+	{
+
+		XAUDIO2_BUFFER buf{};
+		buf.pAudioData = soundDatas.find(filename)->second.pBuffer;
+		buf.AudioBytes = soundDatas.find(filename)->second.bufferSize;
+		buf.Flags = XAUDIO2_END_OF_STREAM;
+
+		// 波形データの再生
+		pSourceVoice->SubmitSourceBuffer(&buf);
+		pSourceVoice->Stop();
+
+		return;
+	}
+
 }
