@@ -21,6 +21,10 @@ void WorldTransform::UpdateMatrix()
 
 	matWorld_ = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 
+	matWorldInverse_ = Inverse(matWorld_);
+
 	transformData_->matWorld = matWorld_;
+
+	transformData_->matWorldInverse = matWorldInverse_;
 
 }

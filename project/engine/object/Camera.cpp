@@ -14,6 +14,8 @@ Camera::Camera()
 	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);*/
 
 	viewProjection.Initialize();
+
+	viewProjection.transform.translate = { 0.0f,0.0f,-15.0f };
 }
 
 void Camera::Update()

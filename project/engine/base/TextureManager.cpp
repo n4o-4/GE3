@@ -38,7 +38,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 
 	if (textureDatas.contains(filePath))
 	{
-
+		return;
 	}
 
 	assert(srvManager_->CheckSrvCount());

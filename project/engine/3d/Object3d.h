@@ -11,6 +11,7 @@
 
 #include "WorldTransform.h"
 #include "ViewProjection.h"
+#include "PointLight.h"
 
 class Object3d
 {
@@ -25,6 +26,7 @@ private:
 
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
+	
 	};
 
 	struct DirectionLight {
@@ -42,7 +44,7 @@ public: // メンバ関数
 	void Update();
 
 	// 描画
-	void Draw(WorldTransform worldTransform,ViewProjection viewProjection);
+	void Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight);
 
 	void SetModel(const std::string& filePath);
 

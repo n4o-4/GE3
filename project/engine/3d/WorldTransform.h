@@ -11,6 +11,7 @@
 struct ConstBufferDataWorldTransform
 {
 	Matrix4x4 matWorld;
+	Matrix4x4 matWorldInverse;
 };
 
 
@@ -30,6 +31,8 @@ public:
 	Transform transform;
 
 	Matrix4x4 matWorld_;
+
+	Matrix4x4 matWorldInverse_;
 
 private:
 

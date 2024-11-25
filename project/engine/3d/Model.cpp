@@ -27,8 +27,12 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 
 	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	materialData->enableLighting = false;
+	materialData->enableLighting = true;
 	materialData->uvTransform = MakeIdentity4x4();
+
+	materialData->shininess = 48.3f;
+
+	materialData->specularColor = { 1.0f,1.0f,1.0f };
 
 	/*TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 

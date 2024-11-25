@@ -28,6 +28,8 @@ public:
 
 	std::unique_ptr<Camera> camera = nullptr;
 
+	std::unique_ptr<PointLight> pointLight = nullptr;
+
 private:
 
 public: // メンバ関数
