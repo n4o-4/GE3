@@ -64,7 +64,7 @@ void Object3d::Update()
 	//transformationMatrixData->WVP = worldViewProjectionMatrix;
 }
 
-void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight)
+void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight,SpotLight spotLight)
 {
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, viewProjection.GetViewProjectionResource()->GetGPUVirtualAddress());
 	
@@ -73,6 +73,8 @@ void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection,
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, worldTransform.GetTransformResource()->GetGPUVirtualAddress());
 
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLight.GetPointLightResource()->GetGPUVirtualAddress());
+
+	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLight.GetSpotLightResource()->GetGPUVirtualAddress());
 
 	if (model) {
 		model->Draw();
