@@ -12,6 +12,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 
 class Object3d
 {
@@ -44,7 +45,7 @@ public: // メンバ関数
 	void Update();
 
 	// 描画
-	void Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight);
+	void Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight,SpotLight spotLight);
 
 	void SetModel(const std::string& filePath);
 

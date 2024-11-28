@@ -30,6 +30,7 @@ public:
 
 	std::unique_ptr<PointLight> pointLight = nullptr;
 
+	std::unique_ptr<SpotLight> spotLight = nullptr;
 private:
 
 public: // メンバ関数
