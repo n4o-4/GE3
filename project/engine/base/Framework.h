@@ -36,9 +36,9 @@ protected:
 
 	std::unique_ptr<ModelCommon> modelCommon = nullptr;
 
-	std::unique_ptr<Camera> camera = nullptr;
+	//std::unique_ptr<Camera> camera = nullptr;
 
-	std::unique_ptr<ParticleEmitter> particleEmitter = nullptr;
+	//std::unique_ptr<ParticleEmitter> particleEmitter = nullptr;
 
 	std::unique_ptr<ImGuiManager> imGuiManager = nullptr;
 
@@ -68,4 +68,5 @@ public:
 	// 実行
 	void Run();
 
+	
 };

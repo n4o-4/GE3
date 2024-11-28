@@ -93,6 +93,33 @@ public:
 
 	void Finalize();
 
+	// particleGroupsをリセット
+	void ResetParticleGroups() {
+		for (auto& group : particleGroups) {
+			// MaterialDataのリセット
+			group.second.materialData = MaterialData();  // MaterialDataの初期化
+
+			// パーティクルのリセット
+			for (auto& particle : group.second.particles) {
+				// Transformのリセット
+				particle.transform = Transform();  // Transformの初期化
+
+				// 速度、色、ライフタイムのリセット
+				particle.velocity = Vector3{ 0.0f, 0.0f, 0.0f };
+				particle.color = Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };  // 色を初期化（例として黒）
+				particle.lifeTime = 0.0f;
+				particle.currentTime = 0.0f;
+			}
+
+			// Instancing関連のリセット
+			group.second.srvIndex = 0;
+			group.second.instancingResource.Reset();  // Resetでリセット
+			group.second.kNumInstance = 0;
+			group.second.instancingData = nullptr;  // インスタンシングデータのポインタをnullptrに設定
+		}
+	}
+
+
 private:
 	static std::unique_ptr<ParticleManager> instance;
 

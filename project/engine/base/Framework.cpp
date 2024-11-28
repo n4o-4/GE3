@@ -80,23 +80,23 @@ void Framework::Initialize()
 	* Cameraの初期化
 	-----------------------------------*/
 
-	camera = std::make_unique<Camera>();
+	Camera::GetInstance()->Initialize();
 
 	/*-----------------------------------
 	* ParticleManagerの初期化
 	-----------------------------------*/
 
-	ParticleManager::GetInstance()->Initialize(DirectXCommon::GetInstance(), srvManager.get(), camera.get());
-	ParticleManager::GetInstance()->CreateParticleGroup("particle", "Resources/circle.png");
+	ParticleManager::GetInstance()->Initialize(DirectXCommon::GetInstance(), srvManager.get(), Camera::GetInstance());
+	//ParticleManager::GetInstance()->CreateParticleGroup("particle", "Resources/circle.png");
 
 	/*-----------------------------------
 	* ParticleEmitterの生成と初期化
 	-----------------------------------*/
 
 
-	particleEmitter = std::make_unique<ParticleEmitter>();
+	/*particleEmitter = std::make_unique<ParticleEmitter>();
 	particleEmitter->Initialize("particle");
-	particleEmitter->Emit();
+	particleEmitter->Emit();*/
 
 	SceneManager::GetInstance()->Initialize();
 }
@@ -107,6 +107,8 @@ void Framework::Finalize()
 	SceneManager::GetInstance()->Finalize(); ///
 
 	ParticleManager::GetInstance()->Finalize(); ///
+
+	Camera::GetInstance()->Finalize();
 
 	ModelManager::GetInstance()->Finalize(); ///
 

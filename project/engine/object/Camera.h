@@ -9,15 +9,24 @@ class Camera
 {
 private:
 
-	//inline struct Transform
-	//{
-	//	Vector3 scale;
-	//	Vector3 rotate;
-	//	Vector3 translate;
-	//};
+	static std::unique_ptr<Camera> instance;
+
+	friend std::unique_ptr<Camera> std::make_unique<Camera>();
+	friend std::default_delete<Camera>;
+
+	Camera() = default;
+	~Camera() = default;
+	Camera(Camera&) = delete;
+	Camera& operator=(Camera&) = delete;
+
 
 public:
-	Camera();
+
+	static Camera* GetInstance();
+
+	void Initialize();
+
+	void Finalize();
 
 	// 更新
 	void Update();

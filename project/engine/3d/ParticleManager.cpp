@@ -73,8 +73,6 @@ void ParticleManager::Update()
 	----------------------------------------------------------*/
 	calculationBillboardMatrix();
 
-
-
 	Matrix4x4 viewMatrix = camera_->GetViewProjection().matView_;
 
 	Matrix4x4 projectionMatrix = camera_->GetViewProjection().matProjection_;
@@ -104,6 +102,7 @@ void ParticleManager::Update()
 				// 追加
 
 				Matrix4x4 scaleMatrix;
+
 				scaleMatrix.m[0][0] = (*particleIterator).transform.scale.x;
 				scaleMatrix.m[0][1] = 0;
 				scaleMatrix.m[0][2] = 0;

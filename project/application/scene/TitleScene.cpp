@@ -24,8 +24,6 @@ void TitleScene::Initialize()
 
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
-	camera = std::make_unique<Camera>();
-
 	/*object3d = std::make_unique<Object3d>();
 
 	object3d->Initialize(Object3dCommon::GetInstance());
@@ -33,12 +31,21 @@ void TitleScene::Initialize()
 	object3d->SetModel("axis.obj");
 
 	object3d->SetCamera(camera.get());*/
+
+	ParticleManager::GetInstance()->CreateParticleGroup("Particle_1", "Resources/circle.png");
+
+
+	particleEmitter_1 = std::make_unique<ParticleEmitter>();
+	particleEmitter_1->Initialize("Particle_1");
+	particleEmitter_1->Emit();
+
 }
 
 void TitleScene::Finalize()
 {
 
 	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
+
 
 }
 
@@ -50,10 +57,6 @@ void TitleScene::Update()
 
 		return;
 	}
-
-	camera->SetTranslate({ 0.0f,0.0f,-15.0f });
-
-	camera->Update();
 
 	sprite->Update();
 
@@ -70,15 +73,21 @@ void TitleScene::Update()
 	object3d->SetTranslate(translate);
 
 	object3d->Update();*/
+
+	ParticleManager::GetInstance()->Update();
+	particleEmitter_1->Update();
 }
 
 void TitleScene::Draw()
 {
+
 	Object3dCommon::GetInstance()->SetView();
 
 	//object3d->Draw();
 
 	SpriteCommon::GetInstance()->SetView();
 
-	sprite->Draw();
+	//sprite->Draw();
+
+	ParticleManager::GetInstance()->Draw("Resources/circle.png");
 }

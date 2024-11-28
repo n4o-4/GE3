@@ -24,6 +24,8 @@ void MyGame::Initialize()
 
 	SceneManager::GetInstance()->ChangeScene("TITLE");
 
+	//Framework::SetCamera()
+
 #pragma endregion 基盤システムの初期化
 
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
@@ -58,11 +60,6 @@ void MyGame::Update()
 
 #endif
 
-	Vector3 cameraTranslate = camera->GetTranslate();
-
-	camera->SetTranslate(cameraTranslate);
-
-	camera->Update();
 }
 
 void MyGame::Draw()
@@ -73,9 +70,6 @@ void MyGame::Draw()
 
 	Framework::Draw();
 	
-
-	
-
 #ifdef _DEBUG
 
 	imGuiManager->Draw(DirectXCommon::GetInstance());
