@@ -15,6 +15,18 @@ class ParticleManager
 
 public:
 
+	enum class BlendMode
+	{
+		kNone,
+		kNormal,
+		kAdd,
+		kSubtract,
+		kMultiply,
+		kScreen,
+
+		kCountOfBlendMode,
+	};
+
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
@@ -170,6 +182,10 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+
+	std::array<Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(BlendMode::kCountOfBlendMode)> sPipeLineStates_;
+
+	BlendMode blendMode = BlendMode::kAdd;
 
 	ModelData modelData;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
