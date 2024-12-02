@@ -7,7 +7,7 @@
 #include "SrvManager.h"
 #include "Camera.h"
 #include <random>
-
+#include <array>
 
 
 class ParticleManager
@@ -131,6 +131,7 @@ public:
 		}
 	}
 
+	void SetBlendMode(std::string sBlendMode);
 
 private:
 	static std::unique_ptr<ParticleManager> instance;
