@@ -162,7 +162,7 @@ void ParticleManager::Draw(std::string filePath)
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 
 	// PSOを設定
-	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+	dxCommon_->GetCommandList()->SetPipelineState(sPipeLineStates_[static_cast<int>(blendMode)].Get());
 
 	// プリミティブトポロジーを設定
 	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
@@ -199,6 +199,36 @@ void ParticleManager::Draw(std::string filePath)
 		dxCommon_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), particleGroupIterator->second.kNumInstance, 0, 0);
 
 		++particleGroupIterator;
+	}
+
+}
+
+void ParticleManager::SetBlendMode(std::string sBlendMode)
+{
+
+	if (sBlendMode == "None")
+	{
+		blendMode = BlendMode::kNone;
+	}
+	else if (sBlendMode == "Normal")
+	{
+		blendMode = BlendMode::kNormal;
+	}
+	else if(sBlendMode == "Add")
+	{
+		blendMode = BlendMode::kAdd;
+	}
+	else if (sBlendMode == "Subtract")
+	{
+		blendMode = BlendMode::kSubtract;
+	}
+	else if (sBlendMode == "Multiply")
+	{
+		blendMode = BlendMode::kMultiply;
+	}
+	else if (sBlendMode == "Screen")
+	{
+		blendMode = BlendMode::kScreen;
 	}
 
 }
@@ -368,10 +398,7 @@ void ParticleManager::CreatePipeline()
 	// 全ての要素数を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	blendDesc.RenderTarget[0].BlendEnable = FALSE;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	
 
 	for (int i = 0; i < static_cast<int>(BlendMode::kCountOfBlendMode); ++i)
 	{
@@ -382,22 +409,34 @@ void ParticleManager::CreatePipeline()
 		case BlendMode::kNone:
 
 			blendDesc.RenderTarget[0].BlendEnable = FALSE;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
-			break;8
+
+			break;
 
 		case BlendMode::kNormal:
 
 			blendDesc.RenderTarget[0].BlendEnable = TRUE;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
+
+			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+
+		
 			break;
 
 		case BlendMode::kAdd:
+
+			blendDesc.RenderTarget[0].BlendEnable = TRUE;
+
+
+			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
 
 			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
@@ -407,6 +446,13 @@ void ParticleManager::CreatePipeline()
 
 		case BlendMode::kSubtract:
 
+			blendDesc.RenderTarget[0].BlendEnable = TRUE;
+
+
+			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_SUBTRACT;
+			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
+
 			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
 			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
@@ -415,24 +461,40 @@ void ParticleManager::CreatePipeline()
 
 		case BlendMode::kMultiply:
 
-			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
-			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+			blendDesc.RenderTarget[0].BlendEnable = TRUE;
+
+
+			// カラーの乗算設定
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_DEST_COLOR;  // デスティネーションカラーを掛け合わせ
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;  // 加算
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;  // デスティネーションカラーはそのまま
+
+			// アルファの設定（アルファを無視する場合）
+			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
 			break;
 
 		case BlendMode::kScreen:
 
-			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
+			blendDesc.RenderTarget[0].BlendEnable = TRUE;
+
+
+			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
+
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_SRC_COLOR;
 			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 
 			break;
 		}
-	}
-	    /*----------------------------------------------------------
-	    * GraphicsPipelineの設定
-	    ----------------------------------------------------------*/
+
+		/*----------------------------------------------------------
+		* GraphicsPipelineの設定
+		----------------------------------------------------------*/
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 		graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
 		graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
@@ -455,50 +517,43 @@ void ParticleManager::CreatePipeline()
 		// DepthStencilの設定
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
+		 
 		// 実際に生成
-	    sPipeLineStates_[i].reset();
+		sPipeLineStates_[i] = nullptr;
 		hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipeLineStates_[i]));
 		assert(SUCCEEDED(hr));
+	}
 
+	///*----------------------------------------------------------
+	//* GraphicsPipelineの設定
+	//----------------------------------------------------------*/
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
+	//graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
+	//graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
+	//graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize() };
+	//graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize() };
+	//graphicsPipelineStateDesc.BlendState = blendDesc;
+	//graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
 
-	
+	//// 書き込むRTVの情報
+	//graphicsPipelineStateDesc.NumRenderTargets = 1;
+	//graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
-	
+	//// 利用するトポロジー(形状)のタイプ。三角形
+	//graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
+	//// どのように画面に色をつけるか
+	//graphicsPipelineStateDesc.SampleDesc.Count = 1;
+	//graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
+	//// DepthStencilの設定
+	//graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	//graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-
-	/*----------------------------------------------------------
-	* GraphicsPipelineの設定
-	----------------------------------------------------------*/
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
-	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize() };
-	graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize() };
-	graphicsPipelineStateDesc.BlendState = blendDesc;
-	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
-
-	// 書き込むRTVの情報
-	graphicsPipelineStateDesc.NumRenderTargets = 1;
-	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-
-	// 利用するトポロジー(形状)のタイプ。三角形
-	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-
-	// どのように画面に色をつけるか
-	graphicsPipelineStateDesc.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-
-	// DepthStencilの設定
-	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
-	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	// 実際に生成
-	graphicsPipelineState = nullptr;
-	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
-	assert(SUCCEEDED(hr));
+	//// 実際に生成
+	//graphicsPipelineState = nullptr;
+	//hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+	//assert(SUCCEEDED(hr));
 }
 
 void ParticleManager::InitializeVertexData()
