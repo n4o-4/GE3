@@ -348,3 +348,37 @@ inline bool IsCollision(const AABB& aabb, const Vector3& point)
 
 	return false;
 }
+
+static Matrix4x4 MakeRotateAxisAngle(Vector3 axis, float angle)
+{
+	// 必要な値を事前計算
+	float cosTheta = cos(angle);
+	float sinTheta = sin(angle);
+	float oneMinusCos = 1.0f - cosTheta;
+
+	// 回転行列の各要素を計算
+	Matrix4x4 rotationMatrix = {};
+
+	rotationMatrix.m[0][0] = cosTheta + axis.x * axis.x * oneMinusCos;
+	rotationMatrix.m[0][1] = axis.y * axis.x * oneMinusCos + axis.z * sinTheta;
+	rotationMatrix.m[0][2] = axis.z * axis.x * oneMinusCos - axis.y * sinTheta;
+	rotationMatrix.m[0][3] = 0.0f;
+
+	rotationMatrix.m[1][0] = axis.x * axis.y * oneMinusCos - axis.z * sinTheta;
+	rotationMatrix.m[1][1] = cosTheta + axis.y * axis.y * oneMinusCos;
+	rotationMatrix.m[1][2] = axis.z * axis.y * oneMinusCos + axis.x * sinTheta;
+	rotationMatrix.m[1][3] = 0.0f;
+
+	rotationMatrix.m[2][0] = axis.x * axis.z * oneMinusCos + axis.y * sinTheta;
+	rotationMatrix.m[2][1] = axis.y * axis.z * oneMinusCos - axis.x * sinTheta;
+	rotationMatrix.m[2][2] = cosTheta + axis.z * axis.z * oneMinusCos;
+	rotationMatrix.m[2][3] = 0.0f;
+
+	rotationMatrix.m[3][0] = 0.0f;
+	rotationMatrix.m[3][1] = 0.0f;
+	rotationMatrix.m[3][2] = 0.0f;
+	rotationMatrix.m[3][3] = 1.0f;
+
+
+	return rotationMatrix;
+}

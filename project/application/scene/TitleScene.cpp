@@ -1,14 +1,26 @@
 #include "TitleScene.h"
 
+void ShowMatrix4x4(const Matrix4x4& matrix, const char* label = "Matrix4x4") {
+	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
+		// äeçsÇï`âÊ
+		for (int i = 0; i < 4; ++i) {
+			ImGui::TableNextRow();
+			for (int j = 0; j < 4; ++j) {
+				ImGui::TableSetColumnIndex(j);
+				ImGui::Text("%.3f", matrix.m[i][j]);
+			}
+		}
+		ImGui::EndTable();
+	}
+}
+
 void TitleScene::Initialize()
 {
+	BaseScene::Initialize();
+
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
-
-	Audio::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
-
-	Audio::GetInstance()->SoundPlayWave("Resources/Alarm01.wav");
 
 	sprite = std::make_unique<Sprite>();
 
@@ -41,14 +53,19 @@ void TitleScene::Initialize()
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
 
+	/*audio = std::make_unique<Audio>();
+	audio->Initialize();
+	audio->SoundPlay("Resources/Spinning_World.mp3");*/
+
+	Vector3 axis = Normalize({ 1.0f,1.0f,1.0f });
+	float angle = 0.44f;
+	rotateMatrix = MakeRotateAxisAngle(axis, angle);
+
 }
 
 void TitleScene::Finalize()
 {
-
-	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
-
-
+	audio->SoundStop("Resources/Spinning_World.mp3");
 }
 
 void TitleScene::Update()
@@ -76,6 +93,16 @@ void TitleScene::Update()
 
 	object3d->Update();*/
 
+#ifdef _DEBUG
+
+	ImGui::Begin("rotateMatrix");
+
+	ShowMatrix4x4(rotateMatrix, "rotateMatrix");
+
+	ImGui::End();
+#endif // _DEBUG
+
+
 	ParticleManager::GetInstance()->Update();
 	particleEmitter_1->Update();
 }
@@ -91,5 +118,5 @@ void TitleScene::Draw()
 
 	//sprite->Draw();
 
-	ParticleManager::GetInstance()->Draw("Resources/circle.png");
+	//ParticleManager::GetInstance()->Draw("Resources/circle.png");
 }
