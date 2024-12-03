@@ -19,7 +19,7 @@ void GameScene::Initialize()
 
 	sprite->SetTexSize({ 512.0f,512.0f });
 
-	ModelManager::GetInstance()->LoadModel("terrain.obj");
+	ModelManager::GetInstance()->LoadModel("plane.gltf");
 
 	//camera = std::make_unique<Camera>();
 
@@ -27,7 +27,7 @@ void GameScene::Initialize()
 
 	object3d->Initialize(Object3dCommon::GetInstance());
 
-	object3d->SetModel("terrain.obj");
+	object3d->SetModel("plane.gltf");
 
 	object3d->SetCamera(camera.get());
 
@@ -50,7 +50,7 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
-	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
+	
 }
 
 void GameScene::Update()

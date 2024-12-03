@@ -64,12 +64,16 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
-	DirectXCommon::GetInstance()->PreDraw();
+	DirectXCommon::GetInstance()->RenderTexturePreDraw();
 
-	srvManager->PreDraw();
+    srvManager->PreDraw();
 
 	Framework::Draw();
-	
+
+	DirectXCommon::GetInstance()->RenderTexturePostDraw();
+
+	DirectXCommon::GetInstance()->PreDraw();
+
 #ifdef _DEBUG
 
 	imGuiManager->Draw(DirectXCommon::GetInstance());

@@ -13,6 +13,8 @@
 #include <chrono>
 #include <thread>
 
+#include "Vectors.h"
+
 //#include "externals/imgui/imgui.h"
 //#include "externals/imgui/imgui_impl_dx12.h"
 //#include "externals/imgui/imgui_impl_win32.h"
@@ -29,7 +31,8 @@ public:
 
 	void Finalize();
 
-	// デバイス初期化
+private: 
+	//デバイス初期化
 	void InitializeDevice();
 
 	// コマンド関連の初期化
@@ -65,15 +68,22 @@ public:
 	// ImGuiの初期化
 	void InitializeImGui();
 
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device,uint32_t width,uint32_t height, DXGI_FORMAT format,const Vector4& clearColor);
+
+	void CreateRenderTextureRTV();
+
+public:
+	void RenderTexturePreDraw();
+
+	void RenderTexturePostDraw();
+
 	// 描画前処理
 	void PreDraw();
 
 	// 描画後処理
 	void PostDraw();
 
-	/*---------------------
-	* メンバー変数
-	---------------------*/
+	
 
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device; }
 
@@ -183,6 +193,10 @@ private: // メンバ関数
 
 private:
 
+	/*---------------------
+	* メンバー変数
+	---------------------*/
+
 	static std::unique_ptr<DirectXCommon> instance;
 
 	friend std::unique_ptr<DirectXCommon> std::make_unique<DirectXCommon>();
@@ -209,6 +223,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
 
 	Microsoft::WRL::ComPtr< ID3D12Fence> fence = nullptr;
 

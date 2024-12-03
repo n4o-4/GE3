@@ -22,7 +22,7 @@ void Framework::Initialize()
 	* Audioの初期化
 	-----------------------------------*/
 
-	Audio::GetInstance()->Initialize();
+	
 
 	/*-----------------------------------
 	* Inputの生成と初期化

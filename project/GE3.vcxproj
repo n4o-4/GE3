@@ -18,6 +18,7 @@
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="engine\3d\WorldTransform.cpp" />
     <ClCompile Include="engine\audio\Audio.cpp" />
+    <ClCompile Include="engine\audio\AudioManager.cpp" />
     <ClCompile Include="engine\base\ViewProjection.cpp" />
     <ClCompile Include="engine\object\Camera.cpp" />
     <ClCompile Include="engine\base\DirectXCommon.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="engine\3d\PrimitiveDrawer.h" />
     <ClInclude Include="engine\3d\WorldTransform.h" />
     <ClInclude Include="engine\audio\Audio.h" />
+    <ClInclude Include="engine\audio\AudioManager.h" />
     <ClInclude Include="engine\base\LeakChecker.h" />
     <ClInclude Include="engine\base\Structs.h" />
     <ClInclude Include="engine\base\ViewProjection.h" />
