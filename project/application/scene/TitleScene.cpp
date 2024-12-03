@@ -2,13 +2,11 @@
 
 void TitleScene::Initialize()
 {
+	BaseScene::Initialize();
+
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
-
-	Audio::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
-
-	Audio::GetInstance()->SoundPlayWave("Resources/Alarm01.wav");
 
 	sprite = std::make_unique<Sprite>();
 
@@ -41,14 +39,15 @@ void TitleScene::Initialize()
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
 
+	audio = std::make_unique<Audio>();
+	audio->Initialize();
+	audio->SoundPlay("Resources/Spinning_World.mp3",999);
+
 }
 
 void TitleScene::Finalize()
 {
-
-	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
-
-
+	audio->SoundStop("Resources/Spinning_World.mp3");
 }
 
 void TitleScene::Update()
