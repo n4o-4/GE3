@@ -11,8 +11,7 @@
 
 #include "WorldTransform.h"
 #include "ViewProjection.h"
-#include "PointLight.h"
-#include "SpotLight.h"
+#include "LightManager.h"
 
 class Object3d
 {
@@ -30,13 +29,6 @@ private:
 	
 	};
 
-	struct DirectionLight {
-		Vector4 color;
-		Vector3 direction;
-		float intensity;
-	};
-
-
 public: // メンバ関数
 	// 初期化
 	void Initialize(Object3dCommon* object3dCommon);
@@ -45,7 +37,7 @@ public: // メンバ関数
 	void Update();
 
 	// 描画
-	void Draw(WorldTransform worldTransform,ViewProjection viewProjection,PointLight pointLight,SpotLight spotLight);
+	void Draw(WorldTransform worldTransform,ViewProjection viewProjection, Lightmanager *lightManager);
 
 	void SetModel(const std::string& filePath);
 
@@ -87,11 +79,7 @@ private:
 
 	TransformationMatrix* transformationMatrixData = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionLightResource;;
-	DirectionLight* directionLightData = nullptr;
-
 	Transform transform;
-	//Transform cameraTransform;
 
 	Model* model = nullptr;
 

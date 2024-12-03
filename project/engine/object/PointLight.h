@@ -17,13 +17,17 @@ struct PointLightData
 
 class PointLight
 {
+
+
+	
+
 public:
 
 	void Initilize();
 
 	void Update();
 
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetPointLightResource() { return pointLightResource_; }
+	PointLightData& GetData() { return pointLightData_; }
 
 public:
 
@@ -35,7 +39,5 @@ public:
 
 private:
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
-
-	PointLightData* pointLightData_ = nullptr;
+	PointLightData pointLightData_;
 };

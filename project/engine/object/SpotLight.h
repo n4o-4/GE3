@@ -6,7 +6,6 @@
 
 #include "DirectXCommon.h"
 
-
 struct SpotLightData
 {
 	Vector4 color; // ライトの色
@@ -22,12 +21,16 @@ struct SpotLightData
 
 class SpotLight
 {
+private:
+
+	
+
 public:
 	void Initialize();
 
 	void Update();
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> GetSpotLightResource() { return spotLightResource_; }
+	SpotLightData& GetData() { return spotLightData_; }
 
 public:
 
@@ -42,7 +45,5 @@ public:
 
 private:
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> spotLightResource_;
-
-	SpotLightData* spotLightData_ = nullptr;
+	SpotLightData spotLightData_;
 };

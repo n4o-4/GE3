@@ -34,11 +34,8 @@ void GameScene::Initialize()
 	objectTransform = std::make_unique<WorldTransform>();
 	objectTransform->Initialize();
 
-	pointLight = std::make_unique<PointLight>();
-	pointLight->Initilize();
-
-	spotLight = std::make_unique<SpotLight>();
-	spotLight->Initialize();
+	lightManager_ = std::make_unique<Lightmanager>();
+	lightManager_->Initialize();
 
 	//camera->SetTranslate({ 0.0f,2.0f,-10.0f });
 
@@ -78,14 +75,6 @@ void GameScene::Update()
 
 	ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
 
-	ImGui::DragFloat3("pointLight.position", &pointLight->position_.x, 0.01f);
-
-	ImGui::DragFloat("pointLight.decay", &pointLight->decay_, 0.01f);
-
-	ImGui::DragFloat("pointLight.radius", &pointLight->radius_, 0.01f);
-
-	ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
-
 #endif
 
 	object3d->Update();
@@ -94,10 +83,8 @@ void GameScene::Update()
 	{
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
+	lightManager_->Update();
 
-	pointLight->Update();
-
-	spotLight->Update();
 }
 
 void GameScene::Draw()
@@ -111,6 +98,6 @@ void GameScene::Draw()
 
 	objectTransform->UpdateMatrix();
 
-	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(), *pointLight.get(), *spotLight.get());
+	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(),lightManager_.get());
 
 }
