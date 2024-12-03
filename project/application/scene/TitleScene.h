@@ -13,6 +13,7 @@
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
 #include "SceneManager.h"
+#include "Audio.h"
 
 class TitleScene : public BaseScene
 {
@@ -24,6 +25,7 @@ private:
 
 	std::unique_ptr<ParticleEmitter> particleEmitter_1 = nullptr;
 
+	std::unique_ptr<Audio> audio = nullptr;
 
 private:
 public: // メンバ関数
