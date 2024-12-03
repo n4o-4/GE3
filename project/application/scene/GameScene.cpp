@@ -50,7 +50,7 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
-	Audio::GetInstance()->SoundStop("Resources/Alarm01.wav");
+	
 }
 
 void GameScene::Update()
