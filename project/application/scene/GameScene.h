@@ -28,6 +28,8 @@ public:
 
 	std::unique_ptr<Camera> camera = nullptr;
 
+	std::unique_ptr<DirectionalLight> directionalLight = nullptr;
+
 	std::unique_ptr<PointLight> pointLight = nullptr;
 
 	std::unique_ptr<SpotLight> spotLight = nullptr;

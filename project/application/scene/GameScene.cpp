@@ -34,6 +34,9 @@ void GameScene::Initialize()
 	objectTransform = std::make_unique<WorldTransform>();
 	objectTransform->Initialize();
 
+	directionalLight = std::make_unique<DirectionalLight>();
+	directionalLight->Initilaize();
+
 	pointLight = std::make_unique<PointLight>();
 	pointLight->Initilize();
 
@@ -111,6 +114,6 @@ void GameScene::Draw()
 
 	objectTransform->UpdateMatrix();
 
-	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(), *pointLight.get(), *spotLight.get());
+	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(),*directionalLight.get(), *pointLight.get(), *spotLight.get());
 
 }
