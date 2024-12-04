@@ -1,21 +1,34 @@
 #include "Camera.h"
 #include "WinApp.h"
 
-Camera::Camera()
-{
-	/*transform = { { 1.0f,1.0f,1.0f },{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
-	fovY = 0.45f;
-	aspectRation = static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight);
-	nearClip = 0.1f;
-	farClip = 100.0f;
-	worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	viewMatrix = Inverse(worldMatrix);
-	projectionMatrix = MakePerspectiveFovMatrix(fovY, aspectRation, nearClip, farClip);
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);*/
+std::unique_ptr<Camera> Camera::instance = nullptr;
 
+Camera* Camera::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = std::make_unique<Camera>();
+	}
+
+	return instance.get();
+}
+
+void Camera::Initialize()
+{
 	viewProjection.Initialize();
 
 	viewProjection.transform.translate = { 0.0f,0.0f,-15.0f };
+
+	viewProjection.Update();
+
+	worldMatrix = MakeAffineMatrix(viewProjection.transform.scale, viewProjection.transform.rotate, viewProjection.transform.translate);
+}
+
+void Camera::Finalize()
+{
+
+	instance.reset();
+
+
 }
 
 void Camera::Update()

@@ -40,6 +40,8 @@ private:
 		int enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
+		Vector3 specularColor;
 	};
 
 private:

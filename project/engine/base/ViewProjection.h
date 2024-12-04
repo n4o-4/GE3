@@ -9,6 +9,8 @@
 
 struct ConstBufferDataViewProjection
 {
+	Vector3 worldPosition;
+	float padding[1];
 	Matrix4x4 matView;
 	Matrix4x4 matProjection;
 };
@@ -27,6 +29,8 @@ public:
 
 	Transform transform;
 
+	Vector3 worldPosition_;
+	Matrix4x4 matWorld_;
 	Matrix4x4 matView_;
 	Matrix4x4 matProjection_;
 
