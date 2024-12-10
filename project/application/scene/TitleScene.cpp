@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 
-void ShowMatrix4x4(const Matrix4x4& matrix, const char* label = "Matrix4x4") {
+void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
+	ImGui::Text("%s",label);
 	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
 		// 各行を描画
 		for (int i = 0; i < 4; ++i) {
@@ -13,6 +14,15 @@ void ShowMatrix4x4(const Matrix4x4& matrix, const char* label = "Matrix4x4") {
 		ImGui::EndTable();
 	}
 }
+
+void ShowQuaternion(const Quaternion& quaternion, const char* label)
+{
+	ImGui::Text("%s", label);
+	// クォータニオンの成分を表示
+	ImGui::Text("x: %.3f, y: %.3f, z: %.3f, w: %.3f", quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+}
+
+
 
 void TitleScene::Initialize()
 {
@@ -52,15 +62,6 @@ void TitleScene::Initialize()
 	particleEmitter_1->Emit();
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
-
-	/*audio = std::make_unique<Audio>();
-	audio->Initialize();
-	audio->SoundPlay("Resources/Spinning_World.mp3");*/
-
-	Vector3 axis = Normalize({ 1.0f,1.0f,1.0f });
-	float angle = 0.44f;
-	rotateMatrix = MakeRotateAxisAngle(axis, angle);
-
 }
 
 void TitleScene::Finalize()
@@ -93,11 +94,28 @@ void TitleScene::Update()
 
 	object3d->Update();*/
 
+	Quaternion q1 = { 2.0f,3.0f,4.0f,1.0f };
+	Quaternion q2 = { 1.0f,3.0f,5.0f,2.0f };
+	Quaternion identity = IdentityQuaternion();
+	Quaternion conj = Conjugate(q1);
+	Quaternion inv = Inverse(q1);
+	Quaternion normal = qNormalize(q1);
+	Quaternion mul1 = Multiply(q1, q2);
+	Quaternion mul2 = Multiply(q2, q1);
+	float norm = Norm(q1);
+
 #ifdef _DEBUG
 
-	ImGui::Begin("rotateMatrix");
+	ImGui::Begin("Quaternion");
 
-	ShowMatrix4x4(rotateMatrix, "rotateMatrix");
+	ShowQuaternion(identity, "identity");
+	ShowQuaternion(conj, "conjugate");
+	ShowQuaternion(inv, "inverse");
+	ShowQuaternion(normal, "Normal");
+	ShowQuaternion(mul1, "multiply1");
+	ShowQuaternion(mul2, "multiply2");
+
+	ImGui::Text("norm = %.3f", norm);
 
 	ImGui::End();
 #endif // _DEBUG
