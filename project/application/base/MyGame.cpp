@@ -31,7 +31,6 @@ void MyGame::Initialize()
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
-
 }
 
 void MyGame::Finalize()

@@ -1,5 +1,14 @@
 #pragma once
-#include "DirectXCommon.h"
+#include <d3d12.h>
+#include <wrl.h>
+#include <dxgi1_6.h>
+#include <cassert>
+#include <dxcapi.h>
+#include <format>
+#include <memory>
+#include "externals/DirectXTex/DirectXTex.h"
+#include <dxgidebug.h>
+#include "Structs.h"
 
 class OffScreenRendring
 {
@@ -10,6 +19,8 @@ public:
 	void Initialzie();
 	void PreDraw();
 	void PostDraw();
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetRenderTextureResource() { return renderTextureResources; }
 
 private:
 

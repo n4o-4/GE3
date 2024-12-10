@@ -53,6 +53,7 @@
     <ClInclude Include="application\scene\SceneFactory.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
+    <ClInclude Include="engine\3d\Animation.h" />
     <ClInclude Include="engine\3d\PrimitiveDrawer.h" />
     <ClInclude Include="engine\3d\WorldTransform.h" />
     <ClInclude Include="engine\audio\Audio.h" />

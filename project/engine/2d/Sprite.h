@@ -71,25 +71,25 @@ private:
 
 private:
 
-	inline struct VertexData {
+	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
 		Vector3 normal;
 	};
 
-	inline struct Material {
+	struct Material {
 		Vector4 color;
 		int enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
 	};
 
-	inline struct TransformationMatrix {
+	struct TransformationMatrix {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 	};
 
-	inline struct Transform
+	struct Transform
 	{
 		Vector3 scale;
 		Vector3 rotate;

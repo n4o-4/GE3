@@ -28,14 +28,14 @@ public:
 
 private:
 
-	inline struct VertexData
+	struct VertexData
 	{
 		Vector4 position;
 		Vector2 texcoord;
 		Vector3 normal;
 	};
 
-	inline struct MaterialData
+	struct MaterialData
 	{
 		std::string textureFilePath;
 		uint32_t textureIndex;
@@ -43,13 +43,13 @@ private:
 
 	
 
-	inline struct ModelData {
+	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
 		Node rootNode;
 	};
 
-	inline struct Material {
+	struct Material {
 		Vector4 color;
 		int enableLighting;
 		float padding[3];

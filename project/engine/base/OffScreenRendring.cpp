@@ -1,5 +1,7 @@
 #include "OffScreenRendring.h"
 
+#include "DirectXCommon.h"
+
 void OffScreenRendring::Initialzie()
 {
 	CreateRenderTextureRTV();
@@ -18,7 +20,7 @@ void OffScreenRendring::PreDraw()
 	barrier.Transition.pResource = renderTextureResources.Get();
 
 	// 還移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 	// 還移後のResourceState
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -26,15 +28,12 @@ void OffScreenRendring::PreDraw()
 	// TransitionBarrierを張る
 	DirectXCommon::GetInstance()->GetCommandList()->ResourceBarrier(1, &barrier);
 
-	// 描画先のRTVを設定する
-	DirectXCommon::GetInstance()->GetCommandList()->OMSetRenderTargets(1, DirectXCommon::GetInstance()->GetRTVHandle(2), false, nullptr);
-
 	// DSV設定
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = DirectXCommon::GetInstance()->GetDSVHeap()->GetCPUDescriptorHandleForHeapStart();
 	DirectXCommon::GetInstance()->GetCommandList()->OMSetRenderTargets(1, DirectXCommon::GetInstance()->GetRTVHandle(2), false, &dsvHandle);
 
 	// 指定した色で画面全体をクリアする
-	float clearColor[] = { 0.1f,0.25,0.5f,1.0f }; // 青っぽい色 RGBAの順
+	float clearColor[] = { 1.0f,0.0f,0.0f,1.0f }; // 青っぽい色 RGBAの順
 	DirectXCommon::GetInstance()->GetCommandList()->ClearRenderTargetView(*DirectXCommon::GetInstance()->GetRTVHandle(2), clearColor, 0, nullptr);
 
 	// 画面全体の深度をクリア
@@ -43,15 +42,25 @@ void OffScreenRendring::PreDraw()
 	
 	DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, DirectXCommon::GetInstance()->GetViewPort()); // Viewportを設定
 	DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, DirectXCommon::GetInstance()->GetRect()); // Scissorを設定
+
+
 }
 
 void OffScreenRendring::PostDraw()
 {
+	// 還移前(現在)のResourceState
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+	// 還移後のResourceState
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 	// TransitionBarrierを張る
 	DirectXCommon::GetInstance()->GetCommandList()->ResourceBarrier(1, &barrier);
+
+
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> OffScreenRendring::CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor)
@@ -83,7 +92,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> OffScreenRendring::CreateRenderTextureRes
 		&heapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		&clearValue,
 		IID_PPV_ARGS(&resource));
 
@@ -92,7 +101,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> OffScreenRendring::CreateRenderTextureRes
 
 void OffScreenRendring::CreateRenderTextureRTV()
 {
-	const Vector4 kRenderTargetClearValue{ 1.0f,0.0f,0.0f,1.0f };
+	const Vector4 kRenderTargetClearValue = { 1.0f,0.0f,0.0f,1.0f };
 	renderTextureResources = CreateRenderTextureResource(
 		DirectXCommon::GetInstance()->GetDevice(),
 		WinApp::kClientWidth,
@@ -101,5 +110,5 @@ void OffScreenRendring::CreateRenderTextureRTV()
 		kRenderTargetClearValue);
 
 	DirectXCommon::GetInstance()->SetRTVHandle(2);
-	DirectXCommon::GetInstance()->GetDevice()->CreateRenderTargetView(renderTextureResources.Get(), *DirectXCommon::GetInstance()->GetRtvDesc(), *DirectXCommon::GetInstance()->GetRTVHandle(2));
+	DirectXCommon::GetInstance()->GetDevice()->CreateRenderTargetView(renderTextureResources.Get(), DirectXCommon::GetInstance()->GetRtvDesc(), *DirectXCommon::GetInstance()->GetRTVHandle(2));
 }
