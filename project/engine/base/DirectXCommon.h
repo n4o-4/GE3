@@ -9,16 +9,13 @@
 #include "WinApp.h"
 #include <dxcapi.h>
 #include <format>
-#include <memory>
 #include <chrono>
 #include <thread>
-
-//#include "externals/imgui/imgui.h"
-//#include "externals/imgui/imgui_impl_dx12.h"
-//#include "externals/imgui/imgui_impl_win32.h"
+#include <memory>
 #include "externals/DirectXTex/DirectXTex.h"
 #include <dxgidebug.h>
 
+#include "Structs.h"
 #include "OffScreenRendring.h"
 
 class DirectXCommon
@@ -92,7 +89,7 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetRTVHandle(int index) { return &rtvHandles[index]; }
 	void SetRTVHandle(int index) { rtvHandles[index].ptr = rtvHandles[index - 1].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); }
 
-	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
+	D3D12_RENDER_TARGET_VIEW_DESC* GetRtvDesc() { return &rtvDesc; }
 
 	UINT GetBufferIndex() { UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex(); return backBufferIndex; }
 
@@ -101,6 +98,8 @@ public:
 	D3D12_VIEWPORT* GetViewPort() { return &viewport; }
 
 	D3D12_RECT* GetRect() { return &scissorRect; }
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetOffRenderTextureResource() { return offScreenRendring->GetRenderTextureResource(); }
 
 private: 
 	//デバイス初期化
@@ -149,6 +148,11 @@ private:
 	// FPS固定更新
 	void UpdateFixFPS();
 
+	void CreateOffScreenRootSignature();
+
+	void CreateOffScreenPipeLine();
+
+	
 private:
 
 	/*---------------------
@@ -231,6 +235,14 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController = nullptr;
 
-	std::unique_ptr<OffScreenRendring> offScreenRendring = nullptr
+	std::unique_ptr<OffScreenRendring> offScreenRendring = nullptr;
 
+	Microsoft::WRL::ComPtr< ID3D12RootSignature> rootSignature;
+
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState;
+
+	//ID3DBlob* signatureBlob = nullptr;
+	Microsoft::WRL::ComPtr< ID3DBlob> signatureBlob = nullptr;
+	//ID3DBlob* errorBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 };

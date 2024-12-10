@@ -22,6 +22,8 @@ void TextureManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	dxCommon_ = dxCommon;
 
 	srvManager_ = srvManager;
+
+	CreateRenderTextureMetaData();
 }
 
 void TextureManager::Finalize()
@@ -83,15 +85,6 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
 
 	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, textureData.metadata.mipLevels);
-
-	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	//srvDesc.Format = textureData.metadata.format;
-	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels); 
-
-	//// SRVの生成
-	//dxCommon_->GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
 }
 
 uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)
@@ -130,4 +123,17 @@ const DirectX::TexMetadata& TextureManager::GetMetaData(std::string filePath)
 	TextureData& textureData = textureDatas[filePath];
 	return textureData.metadata;
 
+}
+
+void TextureManager::CreateRenderTextureMetaData()
+{
+
+
+	TextureData& textureData = textureDatas["RenderTexture"];
+
+	textureData.srvIndex = srvManager_->Allocate();
+	textureData.srvHandleCPU = srvManager_->GetCPUDescriptorHandle(textureData.srvIndex);
+	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
+
+	srvManager_->CreateOffScreenTexture(textureData.srvIndex);
 }

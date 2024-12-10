@@ -35,6 +35,8 @@ public:
 	// メタデータを取得
 	const DirectX::TexMetadata& GetMetaData(std::string filePath);
 
+	void CreateRenderTextureMetaData();
+
 private:
 	static std::unique_ptr<TextureManager> instance;
 
