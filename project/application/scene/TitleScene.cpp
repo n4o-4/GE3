@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 
-void ShowMatrix4x4(const Matrix4x4& matrix, const char* label = "Matrix4x4") {
+void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
+	ImGui::Text("%s",label);
 	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
 		// äeçsÇï`âÊ
 		for (int i = 0; i < 4; ++i) {
@@ -53,14 +54,14 @@ void TitleScene::Initialize()
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
 
-	/*audio = std::make_unique<Audio>();
-	audio->Initialize();
-	audio->SoundPlay("Resources/Spinning_World.mp3");*/
+	Vector3 from0 = Normalize(Vector3{ 1.0f,0.7f,0.5f });
+	Vector3 to0 = Normalize(from0 * -1.0f);
+	Vector3 from1 = Normalize(Vector3{ -0.6f,0.9f,0.2f });
+	Vector3 to1 = Normalize(Vector3{ 0.4f,0.7f,-0.5f });
 
-	Vector3 axis = Normalize({ 1.0f,1.0f,1.0f });
-	float angle = 0.44f;
-	rotateMatrix = MakeRotateAxisAngle(axis, angle);
-
+	rotateMatrix0 = DirectionToDirection(Normalize(Vector3{ 1.0f,0.0f,0.0f }), Normalize(Vector3{ -1.0f,0.0f,0.0f }));
+	rotateMatrix1 = DirectionToDirection(from0, to0);
+	rotateMatrix2 = DirectionToDirection(from1, to1);
 }
 
 void TitleScene::Finalize()
@@ -97,7 +98,9 @@ void TitleScene::Update()
 
 	ImGui::Begin("rotateMatrix");
 
-	ShowMatrix4x4(rotateMatrix, "rotateMatrix");
+	ShowMatrix4x4(rotateMatrix0, "rotateMatrix0");
+	ShowMatrix4x4(rotateMatrix1, "rotateMatrix1");
+	ShowMatrix4x4(rotateMatrix2, "rotateMatrix2");
 
 	ImGui::End();
 #endif // _DEBUG

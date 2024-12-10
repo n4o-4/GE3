@@ -27,7 +27,9 @@ private:
 
 	std::unique_ptr<Audio> audio = nullptr;
 
-	Matrix4x4 rotateMatrix;
+	Matrix4x4 rotateMatrix0;
+	Matrix4x4 rotateMatrix1;
+	Matrix4x4 rotateMatrix2;
 
 private:
 public: // メンバ関数
