@@ -16,6 +16,8 @@ struct Vector3 {
 
 	Vector3(float x = 0, float y = 0, float z = 0) : x(x), y(y), z(z) {}
 
+	Vector3& operator-() { x * -1.0f; y * -1.0f, z * -1.0f; return *this; }
+
 	Vector3& operator+=(const Vector3& v) { x += v.x; y += v.y; z += v.z; return *this; }
 };
 
