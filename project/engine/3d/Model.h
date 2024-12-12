@@ -41,14 +41,6 @@ private:
 		uint32_t textureIndex;
 	};
 
-	
-
-	struct ModelData {
-		std::vector<VertexData> vertices;
-		MaterialData material;
-		Node rootNode;
-	};
-
 	struct Material {
 		Vector4 color;
 		int enableLighting;
@@ -56,6 +48,14 @@ private:
 		Matrix4x4 uvTransform;
 		float shininess;
 		Vector3 specularColor;
+	};
+
+public:
+
+	struct ModelData {
+		std::vector<VertexData> vertices;
+		MaterialData material;
+		Node rootNode;
 	};
 
 private:
