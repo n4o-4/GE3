@@ -16,6 +16,8 @@
 
 #include "WorldTransform.h"
 
+#include "AnimationManager.h"
+
 class GameScene : public BaseScene
 {
 public:
@@ -33,6 +35,9 @@ public:
 	std::unique_ptr<PointLight> pointLight = nullptr;
 
 	std::unique_ptr<SpotLight> spotLight = nullptr;
+
+	std::unique_ptr<AnimationManager> animationManager = nullptr;
+
 private:
 
 public: // メンバ関数

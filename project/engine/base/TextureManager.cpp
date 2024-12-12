@@ -43,6 +43,8 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		return;
 	}
 
+	
+
 	assert(srvManager_->CheckSrvCount());
 
 	// テクスチャ枚数上限チェック

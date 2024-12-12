@@ -70,6 +70,7 @@ void Framework::Initialize()
 	modelCommon = std::make_unique<ModelCommon>();
 	modelCommon->Initialize(DirectXCommon::GetInstance());
 
+
 	/*-----------------------------------
 	* ModelManagerの初期化
 	-----------------------------------*/

@@ -57,12 +57,17 @@ public: // メンバ関数
 	// setter
 	void SetModel(Model* model) { this->model = model; }
 
+	void SetLocalMatrix(Matrix4x4 localMatrix) { this->localMatrix = localMatrix; }
+
+
 private:
 
 	
 
 private:
 	Object3dCommon* object3dCommon = nullptr;
+
+	Matrix4x4 localMatrix;
 
 	//ModelData modelData;
 

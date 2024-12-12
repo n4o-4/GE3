@@ -24,8 +24,9 @@ public:
 	void Finalize();
 	
 	// 音声再生
+
 	void SoundPlay(const char* filename,int loopCount);
-	
+
 	void SoundStop(const char* filename);
 
 	void SetVolume(float volume);

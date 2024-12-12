@@ -194,8 +194,6 @@ void ParticleManager::Draw(std::string filePath)
 
 		dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2,srvManager_->GetGPUDescriptorHandle(particleGroupIterator->second.materialData.textureIndex));
 
-		//dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(TextureManager::GetInstance()->GetTextureIndexByFilePath(filePath)));
-
 		dxCommon_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), particleGroupIterator->second.kNumInstance, 0, 0);
 
 		++particleGroupIterator;
@@ -350,10 +348,6 @@ void ParticleManager::CreatePipeline()
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
-	
-
-
-
 	/*----------------------------------------------------------
 	* RasterizerStateの設定
 	----------------------------------------------------------*/
@@ -377,6 +371,7 @@ void ParticleManager::CreatePipeline()
 	/*----------------------------------------------------------
 	* DepthStencilStateの設定
 	----------------------------------------------------------*/
+
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 
 	// Depthの機能を有効化する
@@ -524,36 +519,6 @@ void ParticleManager::CreatePipeline()
 		assert(SUCCEEDED(hr));
 	}
 
-	///*----------------------------------------------------------
-	//* GraphicsPipelineの設定
-	//----------------------------------------------------------*/
-	//D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	//graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
-	//graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
-	//graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize() };
-	//graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize() };
-	//graphicsPipelineStateDesc.BlendState = blendDesc;
-	//graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
-
-	//// 書き込むRTVの情報
-	//graphicsPipelineStateDesc.NumRenderTargets = 1;
-	//graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-
-	//// 利用するトポロジー(形状)のタイプ。三角形
-	//graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-
-	//// どのように画面に色をつけるか
-	//graphicsPipelineStateDesc.SampleDesc.Count = 1;
-	//graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-
-	//// DepthStencilの設定
-	//graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
-	//graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	//// 実際に生成
-	//graphicsPipelineState = nullptr;
-	//hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
-	//assert(SUCCEEDED(hr));
 }
 
 void ParticleManager::InitializeVertexData()
@@ -616,24 +581,6 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 		newParticleGroup.instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kNumMaxInstance);
 		
 		newParticleGroup.instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&newParticleGroup.instancingData));
-
-
-		// インスタンシング用にSRVを確保してSRVインデックスを記録
-
-		/*D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-		instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		instancingSrvDesc.Buffer.FirstElement = 0;
-		instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-		instancingSrvDesc.Buffer.NumElements = kNumMaxInstance;
-		instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-
-		
-
-		D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = srvManager_->GetCPUDescriptorHandle(newParticleGroup.srvIndex);
-
-		dxCommon_->GetDevice()->CreateShaderResourceView(newParticleGroup.instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);*/
 
 		newParticleGroup.srvIndex = srvManager_->Allocate();
 

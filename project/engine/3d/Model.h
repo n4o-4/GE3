@@ -28,25 +28,12 @@ public:
 
 private:
 
-	struct VertexData
-	{
-		Vector4 position;
-		Vector2 texcoord;
-		Vector3 normal;
-	};
+	
 
 	struct MaterialData
 	{
 		std::string textureFilePath;
 		uint32_t textureIndex;
-	};
-
-	
-
-	struct ModelData {
-		std::vector<VertexData> vertices;
-		MaterialData material;
-		Node rootNode;
 	};
 
 	struct Material {
@@ -58,12 +45,31 @@ private:
 		Vector3 specularColor;
 	};
 
+public:
+
+struct VertexData
+	{
+		Vector4 position;
+		Vector2 texcoord;
+		Vector3 normal;
+	};
+
+	struct ModelData {
+		std::vector<VertexData> vertices;
+		MaterialData material;
+		Node rootNode;
+	};
+
 private:
 
 	// .mtlファイルの読み込み
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+
+
+
+public:
 
 	static Node ReadNode(aiNode* node);
 

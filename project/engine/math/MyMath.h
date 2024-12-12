@@ -1,8 +1,8 @@
 ﻿#pragma once
-
-#include "Vectors.h"
-#include "Matrixs.h"
+#include "Structs.h"
 #include <math.h>
+#include <cmath>
+#include <algorithm>
 #include <numbers>
 
 const float kDeltaTime = 1.0f / 60.0f;
@@ -19,6 +19,37 @@ inline Vector3 Normalize(Vector3 v)
 	lenght = sqrtf(lenght * lenght + v.z * v.z);
 	RVector3 = { (v.x / lenght),(v.y / lenght),(v.z / lenght) };
 	return RVector3;
+}
+
+inline Vector3 Cross(const Vector3& v1, const Vector3& v2) {
+	return Vector3(
+		v1.y * v2.z - v1.z * v2.y,
+		v1.z * v2.x - v1.x * v2.z,
+		v1.x * v2.y - v1.y * v2.x
+	);
+}
+
+inline float Dot(const Vector3& v1, const Vector3& v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline float Length(const Vector3& v) {
+	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+inline Vector3 Perpendicular(const Vector3& v) {
+	// 垂直なベクトルを生成するための基準ベクトル
+	Vector3 reference = (std::fabs(v.x) > std::fabs(v.z)) ? Vector3(0, 0, 1) : Vector3(1, 0, 0);
+
+	// 外積を計算して垂直なベクトルを取得
+	return Cross(v, reference);
+}
+
+inline Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) {
+	return {
+		t * v1.x + (1.0f - t) * v2.x,
+		t * v1.y + (1.0f - t) * v2.y,
+		t * v1.z + (1.0f - t) * v2.z };
 }
 
 static Matrix4x4 MakeRotateXMatrix(float rotate)
@@ -79,6 +110,62 @@ static Matrix4x4 Multiply(Matrix4x4 m1, Matrix4x4 m2)
 	return resultMatrix;
 
 	
+}
+
+static Matrix4x4 MakeScaleMatrix(const Vector3& scale)
+{
+	// スケーリング行列の作成
+	Matrix4x4 scaleMatrix;
+
+	scaleMatrix.m[0][0] = scale.x;  // x軸のスケール
+	scaleMatrix.m[0][1] = 0.0f;     // x軸とy軸のオフセット
+	scaleMatrix.m[0][2] = 0.0f;     // x軸とz軸のオフセット
+	scaleMatrix.m[0][3] = 0.0f;     // 位置情報
+
+	scaleMatrix.m[1][0] = 0.0f;     // y軸とx軸のオフセット
+	scaleMatrix.m[1][1] = scale.y;  // y軸のスケール
+	scaleMatrix.m[1][2] = 0.0f;     // y軸とz軸のオフセット
+	scaleMatrix.m[1][3] = 0.0f;     // 位置情報
+
+	scaleMatrix.m[2][0] = 0.0f;     // z軸とx軸のオフセット
+	scaleMatrix.m[2][1] = 0.0f;     // z軸とy軸のオフセット
+	scaleMatrix.m[2][2] = scale.z;  // z軸のスケール
+	scaleMatrix.m[2][3] = 0.0f;     // 位置情報
+
+	scaleMatrix.m[3][0] = 0.0f;     // 位置情報
+	scaleMatrix.m[3][1] = 0.0f;     // 位置情報
+	scaleMatrix.m[3][2] = 0.0f;     // 位置情報
+	scaleMatrix.m[3][3] = 1.0f;     // 同次座標の一部
+
+	return scaleMatrix;
+}
+
+static Matrix4x4 MakeTranslateMatrix(const Vector3& translate)
+{
+	// 平行移動行列の作成
+	Matrix4x4 translateMatrix;
+
+	translateMatrix.m[0][0] = 1.0f;  // x軸方向のスケーリング（変化なし）
+	translateMatrix.m[0][1] = 0.0f;  // x軸とy軸のオフセット
+	translateMatrix.m[0][2] = 0.0f;  // x軸とz軸のオフセット
+	translateMatrix.m[0][3] = translate.x;  // x軸方向の移動量
+
+	translateMatrix.m[1][0] = 0.0f;  // y軸とx軸のオフセット
+	translateMatrix.m[1][1] = 1.0f;  // y軸方向のスケーリング（変化なし）
+	translateMatrix.m[1][2] = 0.0f;  // y軸とz軸のオフセット
+	translateMatrix.m[1][3] = translate.y;  // y軸方向の移動量
+
+	translateMatrix.m[2][0] = 0.0f;  // z軸とx軸のオフセット
+	translateMatrix.m[2][1] = 0.0f;  // z軸とy軸のオフセット
+	translateMatrix.m[2][2] = 1.0f;  // z軸方向のスケーリング（変化なし）
+	translateMatrix.m[2][3] = translate.z;  // z軸方向の移動量
+
+	translateMatrix.m[3][0] = 0.0f;  // 同次座標のため、位置情報に関係ない部分
+	translateMatrix.m[3][1] = 0.0f;  // 同上
+	translateMatrix.m[3][2] = 0.0f;  // 同上
+	translateMatrix.m[3][3] = 1.0f;  // 同次座標の一部（1）
+
+	return translateMatrix;
 }
 
 static Matrix4x4 MakeAffineMatrix(Vector3 scale, Vector3 rotate, Vector3 Translate)
@@ -347,4 +434,323 @@ inline bool IsCollision(const AABB& aabb, const Vector3& point)
 	}
 
 	return false;
+}
+
+static Matrix4x4 MakeRotateAxisAngle(Vector3 axis, float angle)
+{
+	// 必要な値を事前計算
+	float cosTheta = cos(angle);
+	float sinTheta = sin(angle);
+	float oneMinusCos = 1.0f - cosTheta;
+
+	// 回転行列の各要素を計算
+	Matrix4x4 rotationMatrix = {};
+
+	rotationMatrix.m[0][0] = cosTheta + axis.x * axis.x * oneMinusCos;
+	rotationMatrix.m[0][1] = axis.y * axis.x * oneMinusCos + axis.z * sinTheta;
+	rotationMatrix.m[0][2] = axis.z * axis.x * oneMinusCos - axis.y * sinTheta;
+	rotationMatrix.m[0][3] = 0.0f;
+
+	rotationMatrix.m[1][0] = axis.x * axis.y * oneMinusCos - axis.z * sinTheta;
+	rotationMatrix.m[1][1] = cosTheta + axis.y * axis.y * oneMinusCos;
+	rotationMatrix.m[1][2] = axis.z * axis.y * oneMinusCos + axis.x * sinTheta;
+	rotationMatrix.m[1][3] = 0.0f;
+
+	rotationMatrix.m[2][0] = axis.x * axis.z * oneMinusCos + axis.y * sinTheta;
+	rotationMatrix.m[2][1] = axis.y * axis.z * oneMinusCos - axis.x * sinTheta;
+	rotationMatrix.m[2][2] = cosTheta + axis.z * axis.z * oneMinusCos;
+	rotationMatrix.m[2][3] = 0.0f;
+
+	rotationMatrix.m[3][0] = 0.0f;
+	rotationMatrix.m[3][1] = 0.0f;
+	rotationMatrix.m[3][2] = 0.0f;
+	rotationMatrix.m[3][3] = 1.0f;
+
+
+	return rotationMatrix;
+}
+
+static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to)
+{
+	Vector3 fromNormalized = Normalize(from);
+	Vector3 toNormalized = Normalize(to);
+
+	// ベクトル間の軸を計算
+	Vector3 axis = Cross(fromNormalized, toNormalized);
+	float axisLength = Length(axis);
+
+	// 方向が逆の場合
+	if (axisLength == 0.0f) {
+		if (Dot(fromNormalized, toNormalized) < 0.0f) {
+			// 180度回転の場合、適当な垂直軸を選ぶ
+			axis = Normalize(Perpendicular(fromNormalized));
+		}
+		else {
+			// 同じ方向の場合、単位行列を返す
+			return MakeIdentity4x4();
+		}
+	}
+
+	axis = Normalize(axis);
+
+	// ベクトル間の角度を計算
+	float angle = acosf(std::clamp(Dot(fromNormalized, toNormalized), -1.0f, 1.0f));
+
+	// 回転行列を生成
+	return MakeRotateAxisAngle(axis, angle);
+}
+
+static Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
+{
+	return Quaternion(
+		lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y,  
+		lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x,  
+		lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,  
+		lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z   
+	);
+}
+
+static Quaternion IdentityQuaternion()
+{
+	return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+static Quaternion Conjugate(const Quaternion& quaternion)
+{
+	// クォータニオンの共役を計算
+	return Quaternion(-quaternion.x, -quaternion.y, -quaternion.z, quaternion.w);
+}
+
+// Quaternionのnormを返す
+static float Norm(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算: √(x^2 + y^2 + z^2 + w^2)
+	return sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
+}
+
+static Quaternion qNormalize(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算
+	float norm = Norm(quaternion);
+
+	// ノルムが0でないことを確認（ゼロ除算を避ける）
+	if (norm > 0.0f)
+	{
+		// クォータニオンを正規化
+		float invNorm = 1.0f / norm;
+		return Quaternion(quaternion.x * invNorm, quaternion.y * invNorm, quaternion.z * invNorm, quaternion.w * invNorm);
+	}
+
+	// ノルムがゼロの場合、ゼロのクォータニオンを返す
+	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+static Quaternion Inverse(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算
+	float normSquared = Norm(quaternion) * Norm(quaternion);
+
+	// ノルムの二乗が0でないことを確認（ゼロ除算を避ける）
+	if (normSquared > 0.0f)
+	{
+		// クォータニオンの共役を計算
+		Quaternion conjugate = Conjugate(quaternion);
+
+		// 共役をノルムの二乗で割る
+		float invNormSquared = 1.0f / normSquared;
+		return Quaternion(conjugate.x * invNormSquared, conjugate.y * invNormSquared, conjugate.z * invNormSquared, conjugate.w * invNormSquared);
+	}
+
+	// ノルムの二乗が0の場合、ゼロのクォータニオンを返す
+	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+static float qDot(const Quaternion& q0, const Quaternion& q1)
+{
+	return q0.w * q1.w + q0.x * q1.x + q0.y * q1.y + q0.z * q1.z;
+}
+
+static Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
+{
+	// 角度を半分にし、ラジアンに変換
+	float halfAngle = angle * 0.5f;
+	float sinHalfAngle = std::sin(halfAngle);
+	float cosHalfAngle = std::cos(halfAngle);
+
+	// 回転軸を単位ベクトルに正規化
+	Vector3 normalizedAxis = axis;
+	normalizedAxis = Normalize(normalizedAxis);
+
+	// クォータニオンの成分を計算
+	float qx = normalizedAxis.x * sinHalfAngle;
+	float qy = normalizedAxis.y * sinHalfAngle;
+	float qz = normalizedAxis.z * sinHalfAngle;
+	float qw = cosHalfAngle;
+
+	return Quaternion(qx, qy, qz, qw);
+}
+
+static Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
+{
+	// クォータニオンをベクトルのクォータニオン形式に変換
+	Quaternion vectorQuat(vector.x, vector.y, vector.z, 0.0f);
+
+	// クォータニオンで回転
+	Quaternion conjugateQuat = Inverse(quaternion);
+	Quaternion result = quaternion * vectorQuat * conjugateQuat;
+
+	// 回転後のベクトルを返す
+	return { result.x, result.y, result.z };
+}
+
+static Matrix4x4 MakeRotateMatrix(const Quaternion& q)
+{
+	Matrix4x4 result;
+
+	//// クォータニオンの成分
+    float w = q.w;
+    float x = q.x;
+    float y = q.y;
+    float z = q.z;
+
+	// 各成分の二乗
+	float xx = x * x;
+	float yy = y * y;
+	float zz = z * z;
+	float ww = w * w;
+
+	// クロスターム
+	float xy = x * y;
+	float xz = x * z;
+	float yz = y * z;
+	float wx = w * x;
+	float wy = w * y;
+	float wz = w * z;
+
+	// 回転行列を計算
+	result.m[0][0] = ww + xx - yy - zz;
+	result.m[0][1] = 2.0f * (xy + wz);
+	result.m[0][2] = 2.0f * (xz - wy);
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = 2.0f * (xy - wz);
+	result.m[1][1] = ww - xx + yy - zz;
+	result.m[1][2] = 2.0f * (yz + wx);
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 2.0f * (xz + wy);
+	result.m[2][1] = 2.0f * (yz - wx);
+	result.m[2][2] = ww - xx - yy + zz;
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	
+
+	return result;
+}
+
+static Quaternion qLerp(Quaternion q0, Quaternion q1, float t)
+{
+	//// クォータニオン間のドット積を計算
+	//float dot = quaternion1.x * quaternion2.x + quaternion1.y * quaternion2.y + quaternion1.z * quaternion2.z + quaternion1.w * quaternion2.w;
+
+	// //補間のために、dotが負の値であれば、quaternion2の符号を反転して補間を行う
+	//if (dot < 0.0f)
+	//{
+	//	// クォータニオンの符号を反転
+	//	dot = -dot;
+	//	quaternion1 = Quaternion(-quaternion2.x, -quaternion2.y, -quaternion2.z, -quaternion2.w);
+	//}
+
+	//// 線形補間を計算
+	//Quaternion result;
+	//if (dot > 0.9995f)
+	//{
+	//	// ドット積が1に近い場合、単純な補間で十分
+	//	result.x = quaternion1.x + t * (quaternion2.x - quaternion1.x);
+	//	result.y = quaternion1.y + t * (quaternion2.y - quaternion1.y);
+	//	result.z = quaternion1.z + t * (quaternion2.z - quaternion1.z);
+	//	result.w = quaternion1.w + t * (quaternion2.w - quaternion1.w);
+	//}
+	//else
+	//{
+	//	// クォータニオン間の補間を計算
+	//	float theta_0 = acosf(dot);         // 開始と終了の角度
+	//	float theta = theta_0 * t;          // 補間割合に基づく角度
+	//	float sin_theta = sinf(theta);      // sin(θ)
+	//	float sin_theta_0 = sinf(theta_0);  // sin(θ0)
+
+	//	float s1 = cosf(theta) - dot * sin_theta / sin_theta_0;
+	//	float s2 = sin_theta / sin_theta_0;
+
+	//	result.x = quaternion1.x * s1 + quaternion2.x * s2;
+	//	result.y = quaternion1.y * s1 + quaternion2.y * s2;
+	//	result.z = quaternion1.z * s1 + quaternion2.z * s2;
+	//	result.w = quaternion1.w * s1 + quaternion2.w * s2;
+	//}
+
+	//// 補間結果を正規化して返す
+	////result = qNormalize(result);
+	//return result;
+
+	Quaternion qu0 = q0;
+
+	Quaternion qu1 = q1;
+
+	 // 内積を求める
+	float dot = qDot(qNormalize(qu0),qNormalize(qu1));
+
+	// 内積が負ならq1を反転させて最短経路を取る
+	Quaternion adjustedQ1 = q1;
+	if (dot < 0.0f) {
+		adjustedQ1.x = -q1.x;
+		adjustedQ1.y = -q1.y;
+		adjustedQ1.z = -q1.z;
+		adjustedQ1.w = -q1.w;
+		dot = -dot;
+	}
+
+	// なす角θを求める
+	float theta = std::acos(dot);
+
+	// sin(θ)が0に近い場合はLerpで補間
+	if (std::abs(theta) < 1e-6) {
+		return Quaternion{
+			q0.x * (1.0f - t) + adjustedQ1.x * t,
+			q0.y * (1.0f - t) + adjustedQ1.y * t,
+			q0.z * (1.0f - t) + adjustedQ1.z * t,
+			q0.w * (1.0f - t) + adjustedQ1.w * t
+		};
+	}
+
+	// Slerpの補間係数を計算
+	float sinTheta = std::sin(theta);
+	float scale0 = std::sin((1.0f - t) * theta) / sinTheta;
+	float scale1 = std::sin(t * theta) / sinTheta;
+
+	// 補間結果を求める
+	Quaternion result;
+	result.x = scale0 * q0.x + scale1 * adjustedQ1.x;
+	result.y = scale0 * q0.y + scale1 * adjustedQ1.y;
+	result.z = scale0 * q0.z + scale1 * adjustedQ1.z;
+	result.w = scale0 * q0.w + scale1 * adjustedQ1.w;
+
+	return result;
+}
+
+static Matrix4x4 MakeAffineMatrixforQuater(const Vector3& scale, const Quaternion rotate, const Vector3& translate)
+{
+	Matrix4x4 result;
+
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+
+	result = scaleMatrix * rotateMatrix * translateMatrix;
+
+	return result;
 }

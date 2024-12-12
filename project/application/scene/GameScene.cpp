@@ -2,6 +2,22 @@
 
 #include "imgui.h"
 
+void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
+	ImGui::Text("%s", label);
+	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
+		// 
+		for (int i = 0; i < 4; ++i) {
+			ImGui::TableNextRow();
+			for (int j = 0; j < 4; ++j) {
+				ImGui::TableSetColumnIndex(j);
+				ImGui::Text("%.3f", matrix.m[i][j]);
+			}
+		}
+		ImGui::EndTable();
+	}
+}
+
+
 void GameScene::Initialize()
 {
 
@@ -13,13 +29,13 @@ void GameScene::Initialize()
 
 	//Audio::GetInstance()->SoundPlayWave("Resources/Alarm01.wav");
 
-	sprite = std::make_unique<Sprite>();
+	//sprite = std::make_unique<Sprite>();
 
-	sprite->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
+	//sprite->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
-	sprite->SetTexSize({ 512.0f,512.0f });
+	//sprite->SetTexSize({ 512.0f,512.0f });
 
-	ModelManager::GetInstance()->LoadModel("plane.gltf");
+	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
 
 	//camera = std::make_unique<Camera>();
 
@@ -27,7 +43,7 @@ void GameScene::Initialize()
 
 	object3d->Initialize(Object3dCommon::GetInstance());
 
-	object3d->SetModel("plane.gltf");
+	object3d->SetModel("AnimatedCube/AnimatedCube.gltf");
 
 	object3d->SetCamera(camera.get());
 
@@ -46,18 +62,23 @@ void GameScene::Initialize()
 	//camera->SetTranslate({ 0.0f,2.0f,-10.0f });
 
 	//camera->SetRotate({ 0.2f,0.0f,0.0f });
+
+	animationManager = std::make_unique<AnimationManager>();
+
+	animationManager->LoadAnimationFile("./Resources/AnimatedCube", "AnimatedCube.gltf");
+
+	animationManager->StartAnimation("AnimatedCube.gltf", 0);
 }
 
 void GameScene::Finalize()
 {
-	
 }
 
 void GameScene::Update()
 {
 	//camera->Update();
 
-	sprite->Update();
+	//sprite->Update();
 
 	//objectTransform->transform.rotate.y += 0.01f;
 
@@ -89,9 +110,18 @@ void GameScene::Update()
 
 	ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
 
+	Matrix4x4 localMatrix = animationManager->GetLocalMatrix();
+
+	ShowMatrix4x4(localMatrix, "localMatrix");
+
+	
+	ShowMatrix4x4(objectTransform->matWorld_, "worldMatrix");
 #endif
 
+	animationManager->Update();
+    objectTransform->UpdateMatrix();
 	object3d->Update();
+	object3d->SetLocalMatrix(animationManager->GetLocalMatrix());
 
 	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
 	{
@@ -112,7 +142,7 @@ void GameScene::Draw()
 
 	Object3dCommon::GetInstance()->SetView();
 
-	objectTransform->UpdateMatrix();
+	
 
 	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(),*directionalLight.get(), *pointLight.get(), *spotLight.get());
 
