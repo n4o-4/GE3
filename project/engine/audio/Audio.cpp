@@ -18,7 +18,6 @@ void Audio::Finalize()
 	pSourceVoice->Stop();
 }
 
-
 void Audio::SoundPlay(const char* filename,int loopCount)
 {
 	HRESULT result;
@@ -78,6 +77,7 @@ void Audio::SoundStop(const char* filename)
 
 		return;
 	}
+
 
 }
 
