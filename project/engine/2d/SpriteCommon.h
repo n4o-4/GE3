@@ -45,5 +45,5 @@ private:
 	//ID3DBlob* signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr< ID3DBlob> signatureBlob = nullptr;
 	//ID3DBlob* errorBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 };

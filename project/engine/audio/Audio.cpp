@@ -18,8 +18,7 @@ void Audio::Finalize()
 	pSourceVoice->Stop();
 }
 
-
-void Audio::SoundPlay(const char* filename)
+void Audio::SoundPlay(const char* filename,int loopCount)
 {
 	HRESULT result;
 
@@ -38,6 +37,16 @@ void Audio::SoundPlay(const char* filename)
 		buf.pAudioData = soundDatas.find(filename)->second.pBuffer;
 		buf.AudioBytes = soundDatas.find(filename)->second.bufferSize;
 		buf.Flags = XAUDIO2_END_OF_STREAM;
+
+		if (loopCount != 0)
+		{
+			buf.LoopCount = loopCount;
+		}
+
+		if (loopCount >= 9999)
+		{
+			buf.LoopCount = XAUDIO2_LOOP_INFINITE;
+		}
 
 		// 波形データの再生
 		result = pSourceVoice->SubmitSourceBuffer(&buf);
@@ -69,5 +78,12 @@ void Audio::SoundStop(const char* filename)
 		return;
 	}
 
+
+}
+
+void Audio::SetVolume(float volume)
+{
+
+	pSourceVoice->SetVolume(volume);
 
 }

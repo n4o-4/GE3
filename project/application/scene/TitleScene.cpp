@@ -41,15 +41,12 @@ void TitleScene::Initialize()
 
 	audio = std::make_unique<Audio>();
 	audio->Initialize();
-	audio->SoundPlay("Resources/Spinning_World.mp3");
-
+	audio->SoundPlay("Resources/Spinning_World.mp3",999);
 }
 
 void TitleScene::Finalize()
 {
-
 	audio->SoundStop("Resources/Spinning_World.mp3");
-
 }
 
 void TitleScene::Update()
