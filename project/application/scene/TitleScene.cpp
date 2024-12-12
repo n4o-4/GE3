@@ -3,7 +3,7 @@
 void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
 	ImGui::Text("%s",label);
 	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
-		// Šes‚ğ•`‰æ
+		// ï¿½eï¿½sï¿½ï¿½`ï¿½ï¿½
 		for (int i = 0; i < 4; ++i) {
 			ImGui::TableNextRow();
 			for (int j = 0; j < 4; ++j) {
@@ -18,7 +18,7 @@ void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
 void ShowQuaternion(const Quaternion& quaternion, const char* label)
 {
 	ImGui::Text("%s", label);
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì¬•ª‚ğ•\¦
+	// ï¿½Nï¿½Hï¿½[ï¿½^ï¿½jï¿½Iï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½
 	ImGui::Text("x: %.3f, y: %.3f, z: %.3f, w: %.3f", quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
@@ -62,6 +62,10 @@ void TitleScene::Initialize()
 	particleEmitter_1->Emit();
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
+
+	audio = std::make_unique<Audio>();
+	audio->Initialize();
+	audio->SoundPlay("Resources/Spinning_World.mp3",999);
 }
 
 void TitleScene::Finalize()

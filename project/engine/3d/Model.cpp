@@ -1,15 +1,13 @@
 #include "Model.h"
 #include "TextureManager.h"
 #include "MyMath.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp\postprocess.h>
+
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename)
 {
 	modelCommon_ = modelCommon;
 
-	modelData = LoadObjFile(directoryPath, filename);
+	modelData = LoadModelFile(directoryPath, filename);
 
 	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 
@@ -42,13 +40,19 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	modelData.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData.material.textureFilePath);*/
 }
 
-void Model::Draw()
+void Model::Draw(WorldTransform worldTransform)
 {
+	worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
+
+	worldTransform.UpdateMatrix();
+
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);  // VBVを設定
 
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
+
+	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, worldTransform.GetTransformResource()->GetGPUVirtualAddress());
 
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
@@ -76,7 +80,7 @@ Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directory
 	return materialData;
 }
 
-Model::ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename)
+Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
 	ModelData modelData;
 	//std::vector<Vector4> positions; // 位置
@@ -206,5 +210,33 @@ Model::ModelData Model::LoadObjFile(const std::string& directoryPath, const std:
 		}
 	}
 
+	modelData.rootNode = ReadNode(scene->mRootNode);
+
 	return modelData;
+}
+
+Node Model::ReadNode(aiNode* node)
+{
+	Node result;
+	aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlocalMatrixを取得
+	aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
+	
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
+		}
+	}
+
+	result.name = node->mName.C_Str();
+	result.children.resize(node->mNumChildren);
+
+	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex)
+	{
+
+		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
+	}
+
+	return result;
 }

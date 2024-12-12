@@ -2,7 +2,7 @@
 #include "Vectors.h"
 #include "Matrixs.h"
 
-static struct Transform
+struct Transform
 {
 	Vector3 scale;
 	Vector3 rotate;
