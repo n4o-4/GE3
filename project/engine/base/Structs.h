@@ -8,3 +8,11 @@ struct Transform
 	Vector3 rotate;
 	Vector3 translate;
 };
+
+static struct Quaternion
+{
+	float x;
+	float y;
+	float z;
+	float w;
+};

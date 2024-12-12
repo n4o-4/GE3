@@ -1,8 +1,8 @@
 ﻿#pragma once
-
-#include "Vectors.h"
-#include "Matrixs.h"
+#include "Structs.h"
 #include <math.h>
+#include <cmath>
+#include <algorithm>
 #include <numbers>
 
 const float kDeltaTime = 1.0f / 60.0f;
@@ -19,6 +19,30 @@ inline Vector3 Normalize(Vector3 v)
 	lenght = sqrtf(lenght * lenght + v.z * v.z);
 	RVector3 = { (v.x / lenght),(v.y / lenght),(v.z / lenght) };
 	return RVector3;
+}
+
+inline Vector3 Cross(const Vector3& v1, const Vector3& v2) {
+	return Vector3(
+		v1.y * v2.z - v1.z * v2.y,
+		v1.z * v2.x - v1.x * v2.z,
+		v1.x * v2.y - v1.y * v2.x
+	);
+}
+
+inline float Dot(const Vector3& v1, const Vector3& v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline float Length(const Vector3& v) {
+	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+inline Vector3 Perpendicular(const Vector3& v) {
+	// 垂直なベクトルを生成するための基準ベクトル
+	Vector3 reference = (std::fabs(v.x) > std::fabs(v.z)) ? Vector3(0, 0, 1) : Vector3(1, 0, 0);
+
+	// 外積を計算して垂直なベクトルを取得
+	return Cross(v, reference);
 }
 
 static Matrix4x4 MakeRotateXMatrix(float rotate)
@@ -347,4 +371,133 @@ inline bool IsCollision(const AABB& aabb, const Vector3& point)
 	}
 
 	return false;
+}
+
+static Matrix4x4 MakeRotateAxisAngle(Vector3 axis, float angle)
+{
+	// 必要な値を事前計算
+	float cosTheta = cos(angle);
+	float sinTheta = sin(angle);
+	float oneMinusCos = 1.0f - cosTheta;
+
+	// 回転行列の各要素を計算
+	Matrix4x4 rotationMatrix = {};
+
+	rotationMatrix.m[0][0] = cosTheta + axis.x * axis.x * oneMinusCos;
+	rotationMatrix.m[0][1] = axis.y * axis.x * oneMinusCos + axis.z * sinTheta;
+	rotationMatrix.m[0][2] = axis.z * axis.x * oneMinusCos - axis.y * sinTheta;
+	rotationMatrix.m[0][3] = 0.0f;
+
+	rotationMatrix.m[1][0] = axis.x * axis.y * oneMinusCos - axis.z * sinTheta;
+	rotationMatrix.m[1][1] = cosTheta + axis.y * axis.y * oneMinusCos;
+	rotationMatrix.m[1][2] = axis.z * axis.y * oneMinusCos + axis.x * sinTheta;
+	rotationMatrix.m[1][3] = 0.0f;
+
+	rotationMatrix.m[2][0] = axis.x * axis.z * oneMinusCos + axis.y * sinTheta;
+	rotationMatrix.m[2][1] = axis.y * axis.z * oneMinusCos - axis.x * sinTheta;
+	rotationMatrix.m[2][2] = cosTheta + axis.z * axis.z * oneMinusCos;
+	rotationMatrix.m[2][3] = 0.0f;
+
+	rotationMatrix.m[3][0] = 0.0f;
+	rotationMatrix.m[3][1] = 0.0f;
+	rotationMatrix.m[3][2] = 0.0f;
+	rotationMatrix.m[3][3] = 1.0f;
+
+
+	return rotationMatrix;
+}
+
+static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to)
+{
+	Vector3 fromNormalized = Normalize(from);
+	Vector3 toNormalized = Normalize(to);
+
+	// ベクトル間の軸を計算
+	Vector3 axis = Cross(fromNormalized, toNormalized);
+	float axisLength = Length(axis);
+
+	// 方向が逆の場合
+	if (axisLength == 0.0f) {
+		if (Dot(fromNormalized, toNormalized) < 0.0f) {
+			// 180度回転の場合、適当な垂直軸を選ぶ
+			axis = Normalize(Perpendicular(fromNormalized));
+		}
+		else {
+			// 同じ方向の場合、単位行列を返す
+			return MakeIdentity4x4();
+		}
+	}
+
+	axis = Normalize(axis);
+
+	// ベクトル間の角度を計算
+	float angle = acosf(std::clamp(Dot(fromNormalized, toNormalized), -1.0f, 1.0f));
+
+	// 回転行列を生成
+	return MakeRotateAxisAngle(axis, angle);
+}
+
+static Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
+{
+	return Quaternion(
+		lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y,  
+		lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x,  
+		lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,  
+		lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z   
+	);
+}
+
+static Quaternion IdentityQuaternion()
+{
+	return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+static Quaternion Conjugate(const Quaternion& quaternion)
+{
+	// クォータニオンの共役を計算
+	return Quaternion(-quaternion.x, -quaternion.y, -quaternion.z, quaternion.w);
+}
+
+// Quaternionのnormを返す
+static float Norm(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算: √(x^2 + y^2 + z^2 + w^2)
+	return sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
+}
+
+static Quaternion qNormalize(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算
+	float norm = Norm(quaternion);
+
+	// ノルムが0でないことを確認（ゼロ除算を避ける）
+	if (norm > 0.0f)
+	{
+		// クォータニオンを正規化
+		float invNorm = 1.0f / norm;
+		return Quaternion(quaternion.x * invNorm, quaternion.y * invNorm, quaternion.z * invNorm, quaternion.w * invNorm);
+	}
+
+	// ノルムがゼロの場合、ゼロのクォータニオンを返す
+	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+static Quaternion Inverse(const Quaternion& quaternion)
+{
+	// クォータニオンのノルムを計算
+	float normSquared = Norm(quaternion) * Norm(quaternion);
+
+	// ノルムの二乗が0でないことを確認（ゼロ除算を避ける）
+	if (normSquared > 0.0f)
+	{
+		// クォータニオンの共役を計算
+		Quaternion conjugate = Conjugate(quaternion);
+
+		// 共役をノルムの二乗で割る
+		float invNormSquared = 1.0f / normSquared;
+		return Quaternion(conjugate.x * invNormSquared, conjugate.y * invNormSquared, conjugate.z * invNormSquared, conjugate.w * invNormSquared);
+	}
+
+	// ノルムの二乗が0の場合、ゼロのクォータニオンを返す
+	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
 }

@@ -165,6 +165,9 @@
     <ClCompile Include="engine\base\OffScreenRendring.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\AnimationCommon.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -287,7 +290,7 @@
     <ClInclude Include="engine\base\OffScreenRendring.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Animation.h">
+    <ClInclude Include="engine\3d\AnimationCommon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
