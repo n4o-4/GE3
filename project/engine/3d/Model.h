@@ -4,7 +4,18 @@
 #include "ModelCommon.h"
 #include <fstream>
 #include <string>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp\postprocess.h>
+#include "WorldTransform.h"
+#include "ViewProjection.h"
 
+struct Node
+	{
+		Matrix4x4 localMatrix;
+		std::string name;
+		std::vector<Node> children;
+	};
 // 3Dモデル
 class Model
 {
@@ -13,29 +24,32 @@ public:
 	void Initialize(ModelCommon* modelCommon,const std::string& directoryPath,const std::string& filename);
 
 	// 描画
-	void Draw();
+	void Draw(WorldTransform worldTransform);
 
 private:
 
-	inline struct VertexData
+	struct VertexData
 	{
 		Vector4 position;
 		Vector2 texcoord;
 		Vector3 normal;
 	};
 
-	inline struct MaterialData
+	struct MaterialData
 	{
 		std::string textureFilePath;
 		uint32_t textureIndex;
 	};
 
-	inline struct ModelData {
+	
+
+	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
+		Node rootNode;
 	};
 
-	inline struct Material {
+	struct Material {
 		Vector4 color;
 		int enableLighting;
 		float padding[3];
@@ -49,7 +63,9 @@ private:
 	// .mtlファイルの読み込み
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
-	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+
+	static Node ReadNode(aiNode* node);
 
 private:
 	ModelCommon* modelCommon_;

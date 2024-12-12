@@ -15,6 +15,8 @@
 #include "SceneManager.h"
 #include "Audio.h"
 
+#include "QuaternionMath.h"
+
 class TitleScene : public BaseScene
 {
 private:

@@ -28,6 +28,7 @@ void Camera::Finalize()
 
 	instance.reset();
 
+
 }
 
 void Camera::Update()

@@ -45,6 +45,15 @@ inline Vector3 Perpendicular(const Vector3& v) {
 	return Cross(v, reference);
 }
 
+inline Vector3 fTransform(const Vector3& vector, const Matrix4x4& matrix)
+{
+	return Vector3(
+		vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0],
+		vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1],
+		vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]
+	);
+}
+
 static Matrix4x4 MakeRotateXMatrix(float rotate)
 {
 	Matrix4x4 rM{};
@@ -437,67 +446,3 @@ static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to)
 	return MakeRotateAxisAngle(axis, angle);
 }
 
-static Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
-{
-	return Quaternion(
-		lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y,  
-		lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x,  
-		lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,  
-		lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z   
-	);
-}
-
-static Quaternion IdentityQuaternion()
-{
-	return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-static Quaternion Conjugate(const Quaternion& quaternion)
-{
-	// クォータニオンの共役を計算
-	return Quaternion(-quaternion.x, -quaternion.y, -quaternion.z, quaternion.w);
-}
-
-// Quaternionのnormを返す
-static float Norm(const Quaternion& quaternion)
-{
-	// クォータニオンのノルムを計算: √(x^2 + y^2 + z^2 + w^2)
-	return sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
-}
-
-static Quaternion qNormalize(const Quaternion& quaternion)
-{
-	// クォータニオンのノルムを計算
-	float norm = Norm(quaternion);
-
-	// ノルムが0でないことを確認（ゼロ除算を避ける）
-	if (norm > 0.0f)
-	{
-		// クォータニオンを正規化
-		float invNorm = 1.0f / norm;
-		return Quaternion(quaternion.x * invNorm, quaternion.y * invNorm, quaternion.z * invNorm, quaternion.w * invNorm);
-	}
-
-	// ノルムがゼロの場合、ゼロのクォータニオンを返す
-	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-}
-
-static Quaternion Inverse(const Quaternion& quaternion)
-{
-	// クォータニオンのノルムを計算
-	float normSquared = Norm(quaternion) * Norm(quaternion);
-
-	// ノルムの二乗が0でないことを確認（ゼロ除算を避ける）
-	if (normSquared > 0.0f)
-	{
-		// クォータニオンの共役を計算
-		Quaternion conjugate = Conjugate(quaternion);
-
-		// 共役をノルムの二乗で割る
-		float invNormSquared = 1.0f / normSquared;
-		return Quaternion(conjugate.x * invNormSquared, conjugate.y * invNormSquared, conjugate.z * invNormSquared, conjugate.w * invNormSquared);
-	}
-
-	// ノルムの二乗が0の場合、ゼロのクォータニオンを返す
-	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-}

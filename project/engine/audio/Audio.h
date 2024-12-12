@@ -24,17 +24,17 @@ public:
 	void Finalize();
 	
 	// 音声再生
-	void SoundPlay(const char* filename);
-	
+	void SoundPlay(const char* filename,int loopCount);
+
 	void SoundStop(const char* filename);
+
+	void SetVolume(float volume);
 
 private:
 
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2;
 
 	IXAudio2MasteringVoice* masterVoice;
-
-	
 
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
 

@@ -19,6 +19,7 @@
     <ClCompile Include="engine\3d\WorldTransform.cpp" />
     <ClCompile Include="engine\audio\Audio.cpp" />
     <ClCompile Include="engine\audio\AudioManager.cpp" />
+    <ClCompile Include="engine\base\OffScreenRendring.cpp" />
     <ClCompile Include="engine\base\ViewProjection.cpp" />
     <ClCompile Include="engine\object\Camera.cpp" />
     <ClCompile Include="engine\base\DirectXCommon.cpp" />
@@ -44,6 +45,7 @@
     <ClCompile Include="engine\3d\ParticleEmitter.cpp" />
     <ClCompile Include="engine\3d\ParticleManager.cpp" />
     <ClCompile Include="engine\base\SrvManager.cpp" />
+    <ClCompile Include="engine\math\QuaternionMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\AbstractSceneFactory.h" />
@@ -52,11 +54,13 @@
     <ClInclude Include="application\scene\SceneFactory.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
+    <ClInclude Include="engine\3d\Animation.h" />
     <ClInclude Include="engine\3d\PrimitiveDrawer.h" />
     <ClInclude Include="engine\3d\WorldTransform.h" />
     <ClInclude Include="engine\audio\Audio.h" />
     <ClInclude Include="engine\audio\AudioManager.h" />
     <ClInclude Include="engine\base\LeakChecker.h" />
+    <ClInclude Include="engine\base\OffScreenRendring.h" />
     <ClInclude Include="engine\base\Structs.h" />
     <ClInclude Include="engine\base\ViewProjection.h" />
     <ClInclude Include="engine\object\Camera.h" />
@@ -85,6 +89,7 @@
     <ClInclude Include="engine\object\DirectionalLight.h" />
     <ClInclude Include="engine\object\PointLight.h" />
     <ClInclude Include="engine\object\SpotLight.h" />
+    <ClInclude Include="engine\math\QuaternionMath.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
@@ -96,11 +101,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="Resources\shaders\CopyImage.hlsli" />
     <None Include="Resources\shaders\Object3d.hlsli" />
     <None Include="Resources\shaders\Particle.hlsli" />
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Resources\shaders\CopyImage.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\CopyImage.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
