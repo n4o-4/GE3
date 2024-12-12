@@ -45,6 +45,15 @@ inline Vector3 Perpendicular(const Vector3& v) {
 	return Cross(v, reference);
 }
 
+inline Vector3 fTransform(const Vector3& vector, const Matrix4x4& matrix)
+{
+	return Vector3(
+		vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0],
+		vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1],
+		vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]
+	);
+}
+
 static Matrix4x4 MakeRotateXMatrix(float rotate)
 {
 	Matrix4x4 rM{};
@@ -500,4 +509,69 @@ static Quaternion Inverse(const Quaternion& quaternion)
 
 	// ノルムの二乗が0の場合、ゼロのクォータニオンを返す
 	return Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+// 任意回転を表すQuaternionの生成
+static Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
+{
+	float halfAngle = angle * 0.5f;
+	float sinHalfAngle = std::sin(halfAngle);
+
+	return Quaternion(
+		axis.x * sinHalfAngle,  // x component
+		axis.y * sinHalfAngle,  // y component
+		axis.z * sinHalfAngle,  // z component
+		std::cos(halfAngle)     // w component
+	);
+}
+
+// ベクトルをQuaternionで回転させた結果のベクトルを求める
+static Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
+{
+	Quaternion q = quaternion;
+
+	Quaternion vectorQuat(vector.x, vector.y, vector.z, 0.0f);
+	Quaternion conjugateQuat = Conjugate(q);
+
+	Quaternion rotatedQuat = Multiply(Multiply(quaternion, vectorQuat), conjugateQuat);
+
+	return Vector3(rotatedQuat.x, rotatedQuat.y, rotatedQuat.z);
+}
+
+static Matrix4x4 MakeRotateMatrix(const Quaternion& q)
+{
+	Matrix4x4 matrix;
+
+	float xx = q.x * q.x;
+	float yy = q.y * q.y;
+	float zz = q.z * q.z;
+	float ww = q.w * q.w;
+	float xy = q.x * q.y;
+	float xz = q.x * q.z;
+	float yz = q.y * q.z;
+	float wx = q.w * q.x;
+	float wy = q.w * q.y;
+	float wz = q.w * q.z;
+
+	matrix.m[0][0] = ww + xx - yy - zz;
+	matrix.m[0][1] = 2.0f * (xy + wz);
+	matrix.m[0][2] = 2.0f * (xz - wy);
+	matrix.m[0][3] = 0.0f;
+
+	matrix.m[1][0] = 2.0f * (xy - wz);
+	matrix.m[1][1] = ww - xx + yy - zz;
+	matrix.m[1][2] = 2.0f * (yz + wx);
+	matrix.m[1][3] = 0.0f;
+
+	matrix.m[2][0] = 2.0f * (xz + wy);
+	matrix.m[2][1] = 2.0f * (yz - wx);
+	matrix.m[2][2] = ww - xx - yy + zz;
+	matrix.m[2][3] = 0.0f;
+	
+	matrix.m[3][0] = 0.0f;
+	matrix.m[3][1] = 0.0f;
+	matrix.m[3][2] = 0.0f;
+	matrix.m[3][3] = 1.0f;
+
+	return matrix;
 }

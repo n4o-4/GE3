@@ -31,7 +31,6 @@ void MyGame::Initialize()
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
-
 }
 
 void MyGame::Finalize()
@@ -64,12 +63,16 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
-	DirectXCommon::GetInstance()->PreDraw();
+	DirectXCommon::GetInstance()->RenderTexturePreDraw();
 
-	srvManager->PreDraw();
+    srvManager->PreDraw();
 
 	Framework::Draw();
-	
+
+	DirectXCommon::GetInstance()->RenderTexturePostDraw();
+
+	DirectXCommon::GetInstance()->PreDraw();
+
 #ifdef _DEBUG
 
 	imGuiManager->Draw(DirectXCommon::GetInstance());

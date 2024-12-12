@@ -15,7 +15,7 @@ public:
 
 private:
 
-	inline struct Emitter {
+	struct Emitter {
 		ParticleManager::Transform transform; // エミッタのTransform
 		uint32_t count; // 発生数
 		float frequency; // 発生頻度

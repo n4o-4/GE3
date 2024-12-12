@@ -3,7 +3,7 @@
 void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
 	ImGui::Text("%s",label);
 	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
-		// �e�s��`��
+		// �e�s��`��
 		for (int i = 0; i < 4; ++i) {
 			ImGui::TableNextRow();
 			for (int j = 0; j < 4; ++j) {
@@ -17,12 +17,77 @@ void ShowMatrix4x4(const Matrix4x4& matrix, const char* label) {
 
 void ShowQuaternion(const Quaternion& quaternion, const char* label)
 {
-	ImGui::Text("%s", label);
-	// �N�H�[�^�j�I���̐�����\��
-	ImGui::Text("x: %.3f, y: %.3f, z: %.3f, w: %.3f", quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+	if (ImGui::BeginTable(label, 5, ImGuiTableFlags_Borders)) {
+		// 1行目：ラベルとX, Y, Z, Wのヘッダー
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted(label); // ラベルを最初の列に表示
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("X"); // Xのヘッダー
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("Y"); // Yのヘッダー
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("Z"); // Zのヘッダー
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("W"); // Wのヘッダー
+
+		// 2行目：値を横並びで表示
+		ImGui::TableNextRow(); // 新しい行
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted(""); // ラベル列の値は空白
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", quaternion.x); // X成分の値
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", quaternion.y); // Y成分の値
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", quaternion.z); // Z成分の値
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", quaternion.w); // W成分の値
+
+		ImGui::EndTable(); // テーブルを終了
+	}
 }
 
+void ShowVector3(const Vector3& vector, const char* label)
+{
+	if (ImGui::BeginTable(label, 4, ImGuiTableFlags_Borders)) {
+		// 1行目：ラベルとX, Y, Zのヘッダー
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted(label); // ラベルを最初の列に表示
 
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("X"); // Xのヘッダー
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("Y"); // Yのヘッダー
+
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted("Z"); // Zのヘッダー
+
+		// 2行目：値を横並びで表示
+		ImGui::TableNextRow(); // 新しい行
+		ImGui::TableNextColumn();
+		ImGui::TextUnformatted(""); // ラベル列の値は空白
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", vector.x); // X成分の値
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", vector.y); // Y成分の値
+
+		ImGui::TableNextColumn();
+		ImGui::Text("%.3f", vector.z); // Z成分の値
+
+		ImGui::EndTable(); // テーブルを終了
+	}
+}
 
 void TitleScene::Initialize()
 {
@@ -62,6 +127,10 @@ void TitleScene::Initialize()
 	particleEmitter_1->Emit();
 
 	ParticleManager::GetInstance()->SetBlendMode("Add");
+
+	audio = std::make_unique<Audio>();
+	audio->Initialize();
+	audio->SoundPlay("Resources/Spinning_World.mp3",999);
 }
 
 void TitleScene::Finalize()
@@ -80,42 +149,22 @@ void TitleScene::Update()
 
 	sprite->Update();
 
-	/*Vector3 rotato = object3d->GetRotation();
+	
 
-	rotato.y += 0.02f;
-
-	object3d->SetRotation(rotato);
-
-	Vector3 translate = object3d->GetTranslate();
-
-	translate.z += 0.1f;
-
-	object3d->SetTranslate(translate);
-
-	object3d->Update();*/
-
-	Quaternion q1 = { 2.0f,3.0f,4.0f,1.0f };
-	Quaternion q2 = { 1.0f,3.0f,5.0f,2.0f };
-	Quaternion identity = IdentityQuaternion();
-	Quaternion conj = Conjugate(q1);
-	Quaternion inv = Inverse(q1);
-	Quaternion normal = qNormalize(q1);
-	Quaternion mul1 = Multiply(q1, q2);
-	Quaternion mul2 = Multiply(q2, q1);
-	float norm = Norm(q1);
+	Quaternion rotate = MakeRotateAxisAngleQuaternion(Normalize(Vector3{ 1.0f,0.4f,-0.2f }), 0.45f);
+	Vector3 pointY = { 2.1f,-0.9f,1.3f };
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
+	Vector3 rotateByQuaternion = RotateVector(pointY, rotate);
+	Vector3 rotateByMatrix = fTransform(pointY, rotateMatrix);
 
 #ifdef _DEBUG
 
 	ImGui::Begin("Quaternion");
 
-	ShowQuaternion(identity, "identity");
-	ShowQuaternion(conj, "conjugate");
-	ShowQuaternion(inv, "inverse");
-	ShowQuaternion(normal, "Normal");
-	ShowQuaternion(mul1, "multiply1");
-	ShowQuaternion(mul2, "multiply2");
-
-	ImGui::Text("norm = %.3f", norm);
+	ShowQuaternion(rotate, "rotate");
+	ShowMatrix4x4(rotateMatrix, "rotateMatrix");
+	ShowVector3(rotateByQuaternion, "rotateByQuaternion");
+	ShowVector3(rotateByMatrix, "rotateByMAtrix");
 
 	ImGui::End();
 #endif // _DEBUG
