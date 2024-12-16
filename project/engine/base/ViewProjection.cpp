@@ -18,9 +18,7 @@ void ViewProjection::Initialize()
 	nearClip = 0.1f;
 	farClip = 100.0f;
 
-	viewProjectionData_->matView = MakeIdentity4x4();
-
-	viewProjectionData_->matProjection = MakeIdentity4x4();
+	viewProjectionData_->matViewProjection = MakeIdentity4x4();
 }
 
 void ViewProjection::Update()
@@ -35,7 +33,7 @@ void ViewProjection::Update()
 
 	viewProjectionData_->worldPosition = worldPosition_;
 
-	viewProjectionData_->matView = matView_;
 
-	viewProjectionData_->matProjection = matProjection_;
+
+	viewProjectionData_->matViewProjection = Multiply(matView_,matProjection_);
 }

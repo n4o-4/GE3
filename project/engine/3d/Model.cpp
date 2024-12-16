@@ -42,9 +42,9 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(WorldTransform worldTransform)
 {
-	worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
+	//worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
 
-	worldTransform.UpdateMatrix();
+	//worldTransform.UpdateMatrix();
 
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);  // VBVを設定
 
@@ -57,7 +57,7 @@ void Model::Draw(WorldTransform worldTransform)
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
 
-Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
+MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
 {
 	MaterialData materialData;
 	std::string line;
@@ -80,7 +80,7 @@ Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directory
 	return materialData;
 }
 
-Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename)
+ModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
 	ModelData modelData;
 	

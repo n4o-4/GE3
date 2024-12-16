@@ -62,6 +62,8 @@ void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection,
 {
 	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 
+	worldTransform.TransferMatrix();
+
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, viewProjection.GetViewProjectionResource()->GetGPUVirtualAddress());
 	
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLight.GetDirectionalLightResource()->GetGPUVirtualAddress());

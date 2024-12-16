@@ -24,11 +24,15 @@ public:
 
 	void UpdateMatrix();
 
+	void TransferMatrix();
+
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetTransformResource() { return transformResource_; }
 
 public:
 
 	Transform transform;
+
+	
 
 	Matrix4x4 matWorld_;
 

@@ -22,6 +22,8 @@
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 
+#include "PrimitiveDrawer.h"
+
 #include "LeakChecker.h"
 
 class Framework
@@ -44,7 +46,10 @@ protected:
 
 	std::unique_ptr<AbstaractSceneFactory> sceneFactory_ = nullptr;
 
+	
 	bool endRequest_ = false;
+
+	
 
 public:
 
