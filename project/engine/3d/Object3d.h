@@ -15,6 +15,8 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 
+#include "LightManager.h"
+
 class Object3d
 {
 private:
@@ -39,7 +41,7 @@ public: // メンバ関数
 	void Update();
 
 	// 描画
-	void Draw(WorldTransform worldTransform,ViewProjection viewProjection, DirectionalLight directionalLight ,PointLight pointLight,SpotLight spotLight);
+	void Draw(WorldTransform worldTransform,ViewProjection viewProjection, LightManager *lightMnager);
 
 	void SetModel(const std::string& filePath);
 

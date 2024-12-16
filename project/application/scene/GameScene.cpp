@@ -50,14 +50,6 @@ void GameScene::Initialize()
 	objectTransform = std::make_unique<WorldTransform>();
 	objectTransform->Initialize();
 
-	directionalLight = std::make_unique<DirectionalLight>();
-	directionalLight->Initilaize();
-
-	pointLight = std::make_unique<PointLight>();
-	pointLight->Initilize();
-
-	spotLight = std::make_unique<SpotLight>();
-	spotLight->Initialize();
 
 	//camera->SetTranslate({ 0.0f,2.0f,-10.0f });
 
@@ -68,6 +60,10 @@ void GameScene::Initialize()
 	animationManager->LoadAnimationFile("./Resources/AnimatedCube", "AnimatedCube.gltf");
 
 	animationManager->StartAnimation("AnimatedCube.gltf", 0);
+
+	lightManager_ = std::make_unique<LightManager>();
+
+	lightManager_->Initialize();
 }
 
 void GameScene::Finalize()
@@ -76,6 +72,8 @@ void GameScene::Finalize()
 
 void GameScene::Update()
 {
+	lightManager_->Update();
+
 	//camera->Update();
 
 	//sprite->Update();
@@ -96,19 +94,15 @@ void GameScene::Update()
 
 	camera->SetRotate(rotate);*/
 	
-	ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x,0.01f);
+	if (ImGui::TreeNode("Object.transform")) {
+		ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x, 0.01f);
+		ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+		ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
+		ImGui::TreePop(); // TreeNodeを閉じる
+	}
 
-	ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+	
 
-	ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
-
-	ImGui::DragFloat3("pointLight.position", &pointLight->position_.x, 0.01f);
-
-	ImGui::DragFloat("pointLight.decay", &pointLight->decay_, 0.01f);
-
-	ImGui::DragFloat("pointLight.radius", &pointLight->radius_, 0.01f);
-
-	ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
 
 	Matrix4x4 localMatrix = animationManager->GetLocalMatrix();
 
@@ -127,10 +121,6 @@ void GameScene::Update()
 	{
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
-
-	pointLight->Update();
-
-	spotLight->Update();
 }
 
 void GameScene::Draw()
@@ -144,6 +134,6 @@ void GameScene::Draw()
 
 	
 
-	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(),*directionalLight.get(), *pointLight.get(), *spotLight.get());
+	object3d->Draw(*objectTransform.get(),Camera::GetInstance()->GetViewProjection(),lightManager_.get());
 
 }

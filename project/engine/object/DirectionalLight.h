@@ -5,15 +5,15 @@
 
 #include "DirectXCommon.h"
 
+struct DirectionalLightData {
+	Vector4 color;
+	Vector3 direction;
+	float intensity;
+};
+
 class DirectionalLight
 {
 private:
-
-	struct DirectionalLightData {
-		Vector4 color;
-		Vector3 direction;
-		float intensity;
-	};
 
 public:
 
@@ -21,7 +21,8 @@ public:
 
 	void Update();
 
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetDirectionalLightResource() { return directionalLightResource_; }
+	DirectionalLightData& GetData() { return directionalLightData_; }
+
 public:
 
 	Vector4 color_;
@@ -29,7 +30,5 @@ public:
 	float intensity_;
 
 private:
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-
-	DirectionalLightData *directionalLightData_ = nullptr;
+	DirectionalLightData directionalLightData_;
 };

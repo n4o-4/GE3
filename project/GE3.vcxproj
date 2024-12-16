@@ -31,6 +31,7 @@
     <ClCompile Include="engine\object\DirectionalLight.cpp" />
     <ClCompile Include="engine\object\PointLight.cpp" />
     <ClCompile Include="engine\object\SpotLight.cpp" />
+    <ClCompile Include="engine\3d\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\3d\ModelCommon.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="engine\object\DirectionalLight.h" />
     <ClInclude Include="engine\object\PointLight.h" />
     <ClInclude Include="engine\object\SpotLight.h" />
+    <ClInclude Include="engine\3d\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

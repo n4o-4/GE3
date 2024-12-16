@@ -42,9 +42,9 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(WorldTransform worldTransform)
 {
-	worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
+	//worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
 
-	worldTransform.UpdateMatrix();
+	//worldTransform.UpdateMatrix();
 
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);  // VBVを設定
 
