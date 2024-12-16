@@ -9,6 +9,12 @@ struct Transform
 	Vector3 translate;
 };
 
+struct Sphere {
+	Vector3 center;
+	float radius;
+	unsigned int color;
+};
+
 struct Quaternion
 {
 	float x;

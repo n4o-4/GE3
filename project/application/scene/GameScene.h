@@ -17,6 +17,10 @@
 #include "WorldTransform.h"
 
 #include "AnimationManager.h"
+#include "InputHandler.h"
+#include "Command.h"
+#include "Player.h"
+#include "Enemy.h"
 
 class GameScene : public BaseScene
 {
@@ -38,7 +42,20 @@ public:
 
 	std::unique_ptr<AnimationManager> animationManager = nullptr;
 
+	InputHandler* inputHandler_ = nullptr;
+	ICommand* iCommand_ = nullptr;
+	std::unique_ptr<Player> player_ = nullptr;
+
+	std::list<Enemy> enemys_;
+
+	bool isLockOn_ = false;
+
 private:
+
+	bool CheckCollision(Collider colliderA, Collider colliderB);
+
+
+	void CheckAllCollision();
 
 public: // メンバ関数
 
@@ -53,6 +70,4 @@ public: // メンバ関数
 
 	// 描画
 	void Draw() override;
-
-	
 };
