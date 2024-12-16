@@ -51,7 +51,7 @@ private: // メンバ変数
 	//ID3DBlob* signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr< ID3DBlob> signatureBlob = nullptr;
 	//ID3DBlob* errorBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 
 	std::unique_ptr<Camera> defaultCamera_ = nullptr;
 };

@@ -100,6 +100,9 @@ void Framework::Initialize()
 	particleEmitter->Emit();*/
 
 	SceneManager::GetInstance()->Initialize();
+
+	lineDrawer_ = std::make_unique<PrimitiveDrawer>();
+	lineDrawer_->Initialize(DirectXCommon::GetInstance());
 }
 
 void Framework::Finalize()

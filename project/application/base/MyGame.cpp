@@ -53,6 +53,8 @@ void MyGame::Update()
 
 	Framework::Update();
 
+	lineDrawer_->Update();
+
 #ifdef _DEBUG
 
 	imGuiManager->End();
@@ -63,11 +65,16 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
+	
+
 	DirectXCommon::GetInstance()->RenderTexturePreDraw();
+
+	lineDrawer_->Draw(Camera::GetInstance()->GetViewProjection());
 
     srvManager->PreDraw();
 
 	Framework::Draw();
+
 
 	DirectXCommon::GetInstance()->RenderTexturePostDraw();
 

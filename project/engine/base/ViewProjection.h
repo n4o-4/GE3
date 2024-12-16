@@ -7,12 +7,19 @@
 
 #include "MyMath.h"
 
+//struct ConstBufferDataViewProjection
+//{
+//	Vector3 worldPosition;
+//	float padding[1];
+//	Matrix4x4 matView;
+//	Matrix4x4 matProjection;
+//};
+
 struct ConstBufferDataViewProjection
 {
 	Vector3 worldPosition;
 	float padding[1];
-	Matrix4x4 matView;
-	Matrix4x4 matProjection;
+	Matrix4x4 matViewProjection;
 };
 
 class ViewProjection
