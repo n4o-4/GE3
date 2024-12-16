@@ -3,8 +3,7 @@
 struct ViewProjection
 {
     float3 worldPosition;
-    float4x4 View;
-    float4x4 Projection;
+    float4x4 ViewProjection;
 };
 
 struct WorldMatrix
@@ -27,7 +26,7 @@ struct VertexShaderInput
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
-    float4x4 WVP = mul(gWorldMatrix.World, mul(gViewProjection.View,gViewProjection.Projection)); // âûã}èàíu
+    float4x4 WVP = mul(gWorldMatrix.World, gViewProjection.ViewProjection); // âûã}èàíu
     output.position = mul(input.position, WVP);
     output.texcoord = input.texcoord;
     //output.normal = normalize(mul(input.normal, (float3x3) gWorldMatrix.World));

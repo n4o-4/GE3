@@ -38,7 +38,10 @@ void AnimationManager::LoadAnimationFile(const std::string& directoryPath, const
             aiQuatKey& rotateKeyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
             KeyframeQuaternion rotateKeyframe;
             rotateKeyframe.time = float(rotateKeyAssimp.mTime / animationAssimp->mTicksPerSecond); // 時間の単位を変換(秒)
-            rotateKeyframe.value = { rotateKeyAssimp.mValue.x, -rotateKeyAssimp.mValue.y ,-rotateKeyAssimp.mValue.z }; // 右手->左手
+            rotateKeyframe.value = { rotateKeyAssimp.mValue.x, -rotateKeyAssimp.mValue.y ,-rotateKeyAssimp.mValue.z,rotateKeyAssimp.mValue.w }; // 右手->左手
+
+            rotateKeyframe.value = qNormalize(rotateKeyframe.value);
+
             nodeAnimation.rotate.keyframes.push_back(rotateKeyframe);
         }
 
@@ -60,9 +63,9 @@ void AnimationManager::LoadAnimationFile(const std::string& directoryPath, const
     animations[filename] = animation;
 }
 
-Model::ModelData AnimationManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
+ModelData AnimationManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
-    Model::ModelData modelData;
+    ModelData modelData;
 
     Assimp::Importer importer;
 
@@ -92,7 +95,7 @@ Model::ModelData AnimationManager::LoadModelFile(const std::string& directoryPat
                 aiVector3D& position = mesh->mVertices[vertexIndex];
                 aiVector3D& normal = mesh->mNormals[vertexIndex];
                 aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-                Model::VertexData vertex;
+                VertexData vertex;
                 vertex.position = { position.x,position.y,position.z,1.0f };
                 vertex.normal = { normal.x,normal.y,normal.z };
                 vertex.texcoord = { texcoord.x,texcoord.y };

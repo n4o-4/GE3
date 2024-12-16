@@ -10,12 +10,15 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 
-struct Node
-	{
-		Matrix4x4 localMatrix;
-		std::string name;
-		std::vector<Node> children;
-	};
+#include "ModelDatas.h"
+
+//struct Node
+//	{
+//		Matrix4x4 localMatrix;
+//		std::string name;
+//		std::vector<Node> children;
+//	};
+
 // 3Dモデル
 class Model
 {
@@ -30,7 +33,7 @@ private:
 
 	
 
-	struct MaterialData
+	/*struct MaterialData
 	{
 		std::string textureFilePath;
 		uint32_t textureIndex;
@@ -43,22 +46,22 @@ private:
 		Matrix4x4 uvTransform;
 		float shininess;
 		Vector3 specularColor;
-	};
+	};*/
 
 public:
 
-struct VertexData
-	{
-		Vector4 position;
-		Vector2 texcoord;
-		Vector3 normal;
-	};
-
-	struct ModelData {
-		std::vector<VertexData> vertices;
-		MaterialData material;
-		Node rootNode;
-	};
+//struct VertexData
+//	{
+//		Vector4 position;
+//		Vector2 texcoord;
+//		Vector3 normal;
+//	};
+//
+//	struct ModelData {
+//		std::vector<VertexData> vertices;
+//		MaterialData material;
+//		Node rootNode;
+//	};
 
 private:
 

@@ -43,7 +43,7 @@ private:
 
 		// NodeAnimationの集合体
 		std::unordered_map<std::string, NodeAnimation> nodeAnimations;
-		Model::ModelData modelData;
+		ModelData modelData;
 	};
 
 	struct AnimationState
@@ -65,7 +65,7 @@ public:
    // Animation読み込み
 	void LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 
-	Model::ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 	
 
 	void StartAnimation(const std::string& filename,int loopCount);

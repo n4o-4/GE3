@@ -100,6 +100,9 @@ void Framework::Initialize()
 	particleEmitter->Emit();*/
 
 	SceneManager::GetInstance()->Initialize();
+
+	lineDrawer_ = std::make_unique<LineDrawerBase>();
+	lineDrawer_->Initialize(DirectXCommon::GetInstance(),srvManager.get());
 }
 
 void Framework::Finalize()
@@ -131,6 +134,8 @@ void Framework::Finalize()
 
 void Framework::Update()
 {
+
+	Camera::GetInstance()->Update();
 
 	if (winApp->ProcessMessage()) {
 		endRequest_ = true;

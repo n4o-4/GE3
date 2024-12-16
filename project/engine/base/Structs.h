@@ -2,6 +2,14 @@
 #include "Vectors.h"
 #include "Matrixs.h"
 
+struct Quaternion
+{
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
 struct Transform
 {
 	Vector3 scale;
@@ -9,12 +17,11 @@ struct Transform
 	Vector3 translate;
 };
 
-struct Quaternion
+struct QuaternionTransform
 {
-	float x;
-	float y;
-	float z;
-	float w;
+	Vector3 scale;
+	Quaternion rotate;
+	Vector3 translate;
 };
 
 static Quaternion operator*(const Quaternion& q1, const Quaternion& q2) {
