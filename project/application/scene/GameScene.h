@@ -17,6 +17,9 @@
 #include "WorldTransform.h"
 
 #include "AnimationManager.h"
+#include "InputHandler.h"
+#include "Command.h"
+#include "Player.h"
 
 class GameScene : public BaseScene
 {
@@ -37,6 +40,10 @@ public:
 	std::unique_ptr<SpotLight> spotLight = nullptr;
 
 	std::unique_ptr<AnimationManager> animationManager = nullptr;
+
+	InputHandler* inputHandler_ = nullptr;
+	ICommand* iCommand_ = nullptr;
+	Player* player_ = nullptr;
 
 private:
 

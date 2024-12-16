@@ -68,6 +68,12 @@ void GameScene::Initialize()
 	animationManager->LoadAnimationFile("./Resources/AnimatedCube", "AnimatedCube.gltf");
 
 	animationManager->StartAnimation("AnimatedCube.gltf", 0);
+
+	inputHandler_ = new InputHandler();
+	inputHandler_->AssignMoveRightCommand2PressKeyD();
+	inputHandler_->AssignMoveLeftCommand2PressKeyA();
+
+	player_ = new Player();
 }
 
 void GameScene::Finalize()
@@ -76,39 +82,55 @@ void GameScene::Finalize()
 
 void GameScene::Update()
 {
-	//camera->Update();
+	iCommand_ = inputHandler_->HandleInput();
 
-	//sprite->Update();
+	if (this->iCommand_)
+	{
+		iCommand_->Exec(*player_);
+	}
 
-	//objectTransform->transform.rotate.y += 0.01f;
+	objectTransform->transform.translate = player_->GetTranslate();
 
 #ifdef _DEBUG
-
-	/*Vector3 translate = camera->GetTranslate();
-
-	ImGui::DragFloat3("cameraTranslate", &translate.x, 0.01f);
-
-	camera->SetTranslate(translate);
-
-	Vector3 rotate = camera->GetRotate();
-
-	ImGui::DragFloat3("cameraRotate", &rotate.x, 0.01f);
-
-	camera->SetRotate(rotate);*/
 	
-	ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x,0.01f);
+	if (ImGui::TreeNode("Object.transform")) {
+		ImGui::DragFloat3("object.translate", &objectTransform->transform.translate.x, 0.01f);
+		ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+		ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
+		ImGui::TreePop(); // TreeNode‚ð•Â‚¶‚é
+	}
 
-	ImGui::DragFloat3("object.rotate", &objectTransform->transform.rotate.x, 0.01f);
+	if (ImGui::TreeNode("directionalLight")) {
+		ImGui::ColorEdit4("directionalLight.color", &directionalLight->color_.x, 0.01f);
+		if (ImGui::DragFloat3("directionalLight.direction", &directionalLight->direction_.x, 0.01f))
+		{
+			directionalLight->direction_ = Normalize(directionalLight->direction_);
+		}
+		ImGui::DragFloat("directionalLight.intensity", &directionalLight->intensity_, 0.01f);
+		ImGui::TreePop(); // TreeNode‚ð•Â‚¶‚é
+	}
 
-	ImGui::DragFloat3("Object.scale", &objectTransform->transform.scale.x, 0.01f);
+	if (ImGui::TreeNode("pointLight")) {
+		ImGui::ColorEdit4("pointLight.color", &pointLight->color_.x, 0.01f);
+		ImGui::DragFloat3("pointLight.position", &pointLight->position_.x, 0.01f);
+		ImGui::DragFloat("pointLight.decay", &pointLight->decay_, 0.01f);
+		ImGui::DragFloat("pointLight.radius", &pointLight->radius_, 0.01f);
+		ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
+		ImGui::TreePop(); // TreeNode‚ð•Â‚¶‚é
+	}
 
-	ImGui::DragFloat3("pointLight.position", &pointLight->position_.x, 0.01f);
+	if (ImGui::TreeNode("spotLight")) {
+		ImGui::ColorEdit4("spotlLight.color", &spotLight->color_.x, 0.01f);
+		if (ImGui::DragFloat3("spotLight.direction", &spotLight->direction_.x, 0.01f))
+		{
+			spotLight->direction_ = Normalize(spotLight->direction_);
+		}
+		ImGui::DragFloat3("spotLight.position", &spotLight->position_.x, 0.01f);
+		ImGui::DragFloat("spotLight.decay", &spotLight->decay_, 0.01f);
+		ImGui::DragFloat("spotLight.intensity", &spotLight->intensity_, 0.01f);
+		ImGui::TreePop(); // TreeNode‚ð•Â‚¶‚é
+	}
 
-	ImGui::DragFloat("pointLight.decay", &pointLight->decay_, 0.01f);
-
-	ImGui::DragFloat("pointLight.radius", &pointLight->radius_, 0.01f);
-
-	ImGui::DragFloat("pointLight.intensity", &pointLight->intensity_, 0.01f);
 
 	Matrix4x4 localMatrix = animationManager->GetLocalMatrix();
 
