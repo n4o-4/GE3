@@ -33,7 +33,7 @@ void OffScreenRendring::PreDraw()
 	DirectXCommon::GetInstance()->GetCommandList()->OMSetRenderTargets(1, DirectXCommon::GetInstance()->GetRTVHandle(2), false, &dsvHandle);
 
 	// 指定した色で画面全体をクリアする
-	float clearColor[] = { 1.0f,0.0f,0.0f,1.0f }; // 青っぽい色 RGBAの順
+	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // 青っぽい色 RGBAの順
 	DirectXCommon::GetInstance()->GetCommandList()->ClearRenderTargetView(*DirectXCommon::GetInstance()->GetRTVHandle(2), clearColor, 0, nullptr);
 
 	// 画面全体の深度をクリア
@@ -101,7 +101,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> OffScreenRendring::CreateRenderTextureRes
 
 void OffScreenRendring::CreateRenderTextureRTV()
 {
-	const Vector4 kRenderTargetClearValue = { 1.0f,0.0f,0.0f,1.0f };
+	const Vector4 kRenderTargetClearValue = { 0.1f,0.25f,0.5f,1.0f };
 	renderTextureResources = CreateRenderTextureResource(
 		DirectXCommon::GetInstance()->GetDevice(),
 		WinApp::kClientWidth,

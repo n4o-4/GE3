@@ -1,9 +1,12 @@
 ﻿#pragma once
+#define NOMINMAX
 #include "Structs.h"
 #include <math.h>
 #include <cmath>
 #include <algorithm>
 #include <numbers>
+#include <vector>
+#include <cassert>
 
 const float kDeltaTime = 1.0f / 60.0f;
 
@@ -50,6 +53,127 @@ inline Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) {
 		t * v1.x + (1.0f - t) * v2.x,
 		t * v1.y + (1.0f - t) * v2.y,
 		t * v1.z + (1.0f - t) * v2.z };
+}
+
+inline Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+	const float s = 0.5f; //数式の1/2の事
+
+	float t2 = t * t; // tの2乗
+
+	float t3 = t2 * t; // tの3乗
+
+	//Vector3 e3 = {-p0.x,-p0.y,-p0.z} + 3 * p1 - 3 * p2 + p3;
+	
+	Vector3 e3 = { -p0.x,-p0.y,-p0.z };
+	e3 += 3 * p1;
+	e3 -= 3 * p2;
+	e3 += p3;
+
+	//Vector3 e2 = 2 * p0 - 5 * p1 + 4 * p2 - p3;
+	Vector3 e2 = 2 * p0;
+	e2 -= 5 * p1;
+	e2 += 4 * p2;
+	e2 -= p3;
+
+	//Vector3 e1 = -p0 + p2;
+	Vector3 e1 = { -p0.x,-p0.y,-p0.z };
+	e1 += p2;
+
+	Vector3 e0 = 2 * p1;
+
+	return s * (e3 * t3 + e2 * t2 + e1 * t + e0);
+}
+
+inline Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
+	assert(points.size() >= 4 && "制御点は4点以上必要です");
+
+	// 区間数は制御点の数-1
+	size_t division = points.size() - 1;
+
+	// 1区間の長さ(全体を1.0とした割合)
+	float areaWidth = 1.0f / division;
+
+	// 区間内の始点を0.0f、終点を1.0fとしたときの現在地
+	float t_2 = std::fmod(t, areaWidth) * division;
+
+	// 下限(0.0f)と上限(1.0f)の範囲に収める
+	t_2 = std::clamp(t_2, 0.0f, 1.0f);
+
+	// 区間番号
+	size_t index = static_cast<size_t>(t / areaWidth);
+
+	// 区間番号が上限を超えないために収める
+	//index = std::min(index, points.size() - size_t(2));
+	index = (index < points.size() - size_t(2)) ? index : points.size() - size_t(2);
+
+	// 4点分のインデックス
+	size_t index0 = index - 1;
+	size_t index1 = index;
+	size_t index2 = index + 1;
+	size_t index3 = index + 2;
+
+	// 最初の区間のp0はp1を重複使用する
+	if (index == 0) {
+		index0 = index1;
+	}
+
+	// 最後の区間のp3はp2を重複使用する
+	if (index3 >= points.size()) {
+		index3 = index2;
+	}
+
+	const Vector3& p0 = points[index0];
+	const Vector3& p1 = points[index1];
+	const Vector3& p2 = points[index2];
+	const Vector3& p3 = points[index3];
+
+	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
+}
+
+inline Vector3 CatMullMove(const std::vector<Vector3>& points, float t) {
+	assert(points.size() >= 4 && "制御点は4点以上必要です");
+
+	// 区間数は制御点の数-1
+	size_t division = points.size() - 1;
+
+	// 1区間の長さ(全体を1.0とした割合)
+	float areaWidth = 1.0f / division;
+
+	// 区間内の始点を0.0f、終点を1.0fとしたときの現在地
+	float t_2 = std::fmod(t, areaWidth) * division;
+
+	// 下限(0.0f)と上限(1.0f)の範囲に収める
+	t_2 = std::clamp(t_2, 0.0f, 1.0f);
+
+	// 区間番号
+	size_t index = static_cast<size_t>(t / areaWidth);
+
+	// 区間番号が上限を超えないために収める
+	//index = std::min(index, points.size() - 2);
+	index = (index < points.size() - size_t(2)) ? index : points.size() - size_t(2);
+
+	// 4点分のインデックス
+	size_t index0 = index - 1;
+	size_t index1 = index;
+	size_t index2 = index + 1;
+	size_t index3 = index + 2;
+
+	// 最初の区間のp0はp1を重複使用する
+	if (index == 0) {
+		index0 = index1;
+	}
+
+	// 最後の区間のp3はp2を重複使用する
+	if (index3 >= points.size()) {
+		index3 = index2;
+	}
+
+	const Vector3& p0 = points[index0];
+	const Vector3& p1 = points[index1];
+	const Vector3& p2 = points[index2];
+	const Vector3& p3 = points[index3];
+
+	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
 }
 
 static Matrix4x4 MakeRotateXMatrix(float rotate)
@@ -570,87 +694,69 @@ static float qDot(const Quaternion& q0, const Quaternion& q1)
 	return q0.w * q1.w + q0.x * q1.x + q0.y * q1.y + q0.z * q1.z;
 }
 
+// 任意回転を表すQuaternionの生成
 static Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
 {
-	// 角度を半分にし、ラジアンに変換
 	float halfAngle = angle * 0.5f;
 	float sinHalfAngle = std::sin(halfAngle);
-	float cosHalfAngle = std::cos(halfAngle);
 
-	// 回転軸を単位ベクトルに正規化
-	Vector3 normalizedAxis = axis;
-	normalizedAxis = Normalize(normalizedAxis);
-
-	// クォータニオンの成分を計算
-	float qx = normalizedAxis.x * sinHalfAngle;
-	float qy = normalizedAxis.y * sinHalfAngle;
-	float qz = normalizedAxis.z * sinHalfAngle;
-	float qw = cosHalfAngle;
-
-	return Quaternion(qx, qy, qz, qw);
+	return Quaternion(
+		axis.x * sinHalfAngle,  // x component
+		axis.y * sinHalfAngle,  // y component
+		axis.z * sinHalfAngle,  // z component
+		std::cos(halfAngle)     // w component
+	);
 }
 
+// ベクトルをQuaternionで回転させた結果のベクトルを求める
 static Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
 {
-	// クォータニオンをベクトルのクォータニオン形式に変換
+	Quaternion q = quaternion;
+
 	Quaternion vectorQuat(vector.x, vector.y, vector.z, 0.0f);
+	Quaternion conjugateQuat = Conjugate(q);
 
-	// クォータニオンで回転
-	Quaternion conjugateQuat = Inverse(quaternion);
-	Quaternion result = quaternion * vectorQuat * conjugateQuat;
+	Quaternion rotatedQuat = Multiply(Multiply(quaternion, vectorQuat), conjugateQuat);
 
-	// 回転後のベクトルを返す
-	return { result.x, result.y, result.z };
+	return Vector3(rotatedQuat.x, rotatedQuat.y, rotatedQuat.z);
 }
 
 static Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 {
-	Matrix4x4 result;
+	Matrix4x4 matrix;
 
-	//// クォータニオンの成分
-    float w = q.w;
-    float x = q.x;
-    float y = q.y;
-    float z = q.z;
+	float xx = q.x * q.x;
+	float yy = q.y * q.y;
+	float zz = q.z * q.z;
+	float ww = q.w * q.w;
+	float xy = q.x * q.y;
+	float xz = q.x * q.z;
+	float yz = q.y * q.z;
+	float wx = q.w * q.x;
+	float wy = q.w * q.y;
+	float wz = q.w * q.z;
 
-	// 各成分の二乗
-	float xx = x * x;
-	float yy = y * y;
-	float zz = z * z;
-	float ww = w * w;
+	matrix.m[0][0] = ww + xx - yy - zz;
+	matrix.m[0][1] = 2.0f * (xy + wz);
+	matrix.m[0][2] = 2.0f * (xz - wy);
+	matrix.m[0][3] = 0.0f;
 
-	// クロスターム
-	float xy = x * y;
-	float xz = x * z;
-	float yz = y * z;
-	float wx = w * x;
-	float wy = w * y;
-	float wz = w * z;
+	matrix.m[1][0] = 2.0f * (xy - wz);
+	matrix.m[1][1] = ww - xx + yy - zz;
+	matrix.m[1][2] = 2.0f * (yz + wx);
+	matrix.m[1][3] = 0.0f;
 
-	// 回転行列を計算
-	result.m[0][0] = ww + xx - yy - zz;
-	result.m[0][1] = 2.0f * (xy + wz);
-	result.m[0][2] = 2.0f * (xz - wy);
-	result.m[0][3] = 0.0f;
+	matrix.m[2][0] = 2.0f * (xz + wy);
+	matrix.m[2][1] = 2.0f * (yz - wx);
+	matrix.m[2][2] = ww - xx - yy + zz;
+	matrix.m[2][3] = 0.0f;
 
-	result.m[1][0] = 2.0f * (xy - wz);
-	result.m[1][1] = ww - xx + yy - zz;
-	result.m[1][2] = 2.0f * (yz + wx);
-	result.m[1][3] = 0.0f;
+	matrix.m[3][0] = 0.0f;
+	matrix.m[3][1] = 0.0f;
+	matrix.m[3][2] = 0.0f;
+	matrix.m[3][3] = 1.0f;
 
-	result.m[2][0] = 2.0f * (xz + wy);
-	result.m[2][1] = 2.0f * (yz - wx);
-	result.m[2][2] = ww - xx - yy + zz;
-	result.m[2][3] = 0.0f;
-
-	result.m[3][0] = 0.0f;
-	result.m[3][1] = 0.0f;
-	result.m[3][2] = 0.0f;
-	result.m[3][3] = 1.0f;
-
-	
-
-	return result;
+	return matrix;
 }
 
 static Quaternion qLerp(Quaternion q0, Quaternion q1, float t)

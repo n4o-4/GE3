@@ -17,10 +17,19 @@ struct Vector3 {
 	Vector3(float x = 0, float y = 0, float z = 0) : x(x), y(y), z(z) {}
 
 	Vector3& operator+=(const Vector3& v) { x += v.x; y += v.y; z += v.z; return *this; }
+	Vector3& operator-=(const Vector3& v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
 };
 
 inline Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Vector3{ v1.x + v2.x,v1.y + v2.y,v1.z + v2.z }; }
+inline Vector3 operator-(const Vector3& v1, const Vector3& v2) {return Vector3{ v1.x - v2.x,v1.y - v2.y,v1.z - v2.z };
+}
 inline Vector3 operator*(const Vector3& v1, float s) { return Vector3{ v1.x * s,v1.y * s,v1.z * s }; }
+inline Vector3 operator*(float s, const Vector3& v) { return v	* s; }
+
+//inline Vector3 operator+(const Vector3& v1, const Vector3& v2) { return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z }; }
+
+//inline Vector3 operator-(const Vector3& v) { return { -v.x, -v.y, -v.z }; }
+//inline Vector3 operator*(const Vector3& v, float s) { return s * v; }
 
 struct Vector4 {
 	float x;
