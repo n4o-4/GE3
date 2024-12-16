@@ -570,87 +570,69 @@ static float qDot(const Quaternion& q0, const Quaternion& q1)
 	return q0.w * q1.w + q0.x * q1.x + q0.y * q1.y + q0.z * q1.z;
 }
 
+// 任意回転を表すQuaternionの生成
 static Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
 {
-	// 角度を半分にし、ラジアンに変換
 	float halfAngle = angle * 0.5f;
 	float sinHalfAngle = std::sin(halfAngle);
-	float cosHalfAngle = std::cos(halfAngle);
 
-	// 回転軸を単位ベクトルに正規化
-	Vector3 normalizedAxis = axis;
-	normalizedAxis = Normalize(normalizedAxis);
-
-	// クォータニオンの成分を計算
-	float qx = normalizedAxis.x * sinHalfAngle;
-	float qy = normalizedAxis.y * sinHalfAngle;
-	float qz = normalizedAxis.z * sinHalfAngle;
-	float qw = cosHalfAngle;
-
-	return Quaternion(qx, qy, qz, qw);
+	return Quaternion(
+		axis.x * sinHalfAngle,  // x component
+		axis.y * sinHalfAngle,  // y component
+		axis.z * sinHalfAngle,  // z component
+		std::cos(halfAngle)     // w component
+	);
 }
 
+// ベクトルをQuaternionで回転させた結果のベクトルを求める
 static Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
 {
-	// クォータニオンをベクトルのクォータニオン形式に変換
+	Quaternion q = quaternion;
+
 	Quaternion vectorQuat(vector.x, vector.y, vector.z, 0.0f);
+	Quaternion conjugateQuat = Conjugate(q);
 
-	// クォータニオンで回転
-	Quaternion conjugateQuat = Inverse(quaternion);
-	Quaternion result = quaternion * vectorQuat * conjugateQuat;
+	Quaternion rotatedQuat = Multiply(Multiply(quaternion, vectorQuat), conjugateQuat);
 
-	// 回転後のベクトルを返す
-	return { result.x, result.y, result.z };
+	return Vector3(rotatedQuat.x, rotatedQuat.y, rotatedQuat.z);
 }
 
 static Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 {
-	Matrix4x4 result;
+	Matrix4x4 matrix;
 
-	//// クォータニオンの成分
-    float w = q.w;
-    float x = q.x;
-    float y = q.y;
-    float z = q.z;
+	float xx = q.x * q.x;
+	float yy = q.y * q.y;
+	float zz = q.z * q.z;
+	float ww = q.w * q.w;
+	float xy = q.x * q.y;
+	float xz = q.x * q.z;
+	float yz = q.y * q.z;
+	float wx = q.w * q.x;
+	float wy = q.w * q.y;
+	float wz = q.w * q.z;
 
-	// 各成分の二乗
-	float xx = x * x;
-	float yy = y * y;
-	float zz = z * z;
-	float ww = w * w;
+	matrix.m[0][0] = ww + xx - yy - zz;
+	matrix.m[0][1] = 2.0f * (xy + wz);
+	matrix.m[0][2] = 2.0f * (xz - wy);
+	matrix.m[0][3] = 0.0f;
 
-	// クロスターム
-	float xy = x * y;
-	float xz = x * z;
-	float yz = y * z;
-	float wx = w * x;
-	float wy = w * y;
-	float wz = w * z;
+	matrix.m[1][0] = 2.0f * (xy - wz);
+	matrix.m[1][1] = ww - xx + yy - zz;
+	matrix.m[1][2] = 2.0f * (yz + wx);
+	matrix.m[1][3] = 0.0f;
 
-	// 回転行列を計算
-	result.m[0][0] = ww + xx - yy - zz;
-	result.m[0][1] = 2.0f * (xy + wz);
-	result.m[0][2] = 2.0f * (xz - wy);
-	result.m[0][3] = 0.0f;
+	matrix.m[2][0] = 2.0f * (xz + wy);
+	matrix.m[2][1] = 2.0f * (yz - wx);
+	matrix.m[2][2] = ww - xx - yy + zz;
+	matrix.m[2][3] = 0.0f;
 
-	result.m[1][0] = 2.0f * (xy - wz);
-	result.m[1][1] = ww - xx + yy - zz;
-	result.m[1][2] = 2.0f * (yz + wx);
-	result.m[1][3] = 0.0f;
+	matrix.m[3][0] = 0.0f;
+	matrix.m[3][1] = 0.0f;
+	matrix.m[3][2] = 0.0f;
+	matrix.m[3][3] = 1.0f;
 
-	result.m[2][0] = 2.0f * (xz + wy);
-	result.m[2][1] = 2.0f * (yz - wx);
-	result.m[2][2] = ww - xx - yy + zz;
-	result.m[2][3] = 0.0f;
-
-	result.m[3][0] = 0.0f;
-	result.m[3][1] = 0.0f;
-	result.m[3][2] = 0.0f;
-	result.m[3][3] = 1.0f;
-
-	
-
-	return result;
+	return matrix;
 }
 
 static Quaternion qLerp(Quaternion q0, Quaternion q1, float t)
