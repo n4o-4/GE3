@@ -28,3 +28,12 @@ void WorldTransform::UpdateMatrix()
 	transformData_->matWorldInverse = matWorldInverse_;
 
 }
+
+void WorldTransform::TransferMatrix()
+{
+	matWorldInverse_ = Inverse(matWorld_);
+
+	transformData_->matWorld = matWorld_;
+
+	transformData_->matWorldInverse = matWorldInverse_;
+}

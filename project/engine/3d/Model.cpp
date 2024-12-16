@@ -42,9 +42,9 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(WorldTransform worldTransform)
 {
-	worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
+	//worldTransform.matWorld_ = Multiply(modelData.rootNode.localMatrix,worldTransform.matWorld_);
 
-	worldTransform.UpdateMatrix();
+	//worldTransform.UpdateMatrix();
 
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);  // VBVを設定
 
@@ -103,7 +103,7 @@ Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const st
 		{
 			aiFace& face = mesh->mFaces[faceIndex];
 
-			assert(face.mNumIndices == 3); // 三角形のみサポート
+			//assert(face.mNumIndices == 3); // 三角形のみサポート
 			// ここからFaceの中身(Vertex)の解析を行っていく
 
 			for (uint32_t element = 0; element < face.mNumIndices; ++element)
@@ -121,7 +121,6 @@ Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const st
 				vertex.normal.x *= -1.0f;
 				modelData.vertices.push_back(vertex);
 			}
-
 		}
 	}
 

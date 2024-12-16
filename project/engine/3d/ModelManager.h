@@ -4,6 +4,7 @@
 #include <memory>
 #include "Model.h"
 #include "ModelCommon.h"
+#include "AnimationManager.h"
 
 class ModelManager
 {
@@ -34,9 +35,12 @@ private:
 	ModelManager& operator=(ModelManager&) = delete;
 
 private:
+
 	// モデルデータ
 	std::map<std::string, std::unique_ptr<Model>> models;
 
 	std::unique_ptr<ModelCommon> modelCommon = nullptr;
+
+	//AnimationManager
 };
 

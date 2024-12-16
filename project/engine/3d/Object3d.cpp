@@ -19,6 +19,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	this->camera = object3dCommon->GetDefaultCamera();
 
 	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
+	localMatrix = MakeIdentity4x4();
 }
 
 void Object3d::Update()
@@ -61,6 +63,8 @@ void Object3d::Update()
 void Object3d::Draw(WorldTransform worldTransform,ViewProjection viewProjection,DirectionalLight directionalLight ,PointLight pointLight,SpotLight spotLight)
 {
 	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
+
+	worldTransform.TransferMatrix();
 
 	object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, viewProjection.GetViewProjectionResource()->GetGPUVirtualAddress());
 	

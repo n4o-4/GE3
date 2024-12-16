@@ -4,53 +4,63 @@ void TitleScene::Initialize()
 {
 	BaseScene::Initialize();
 
-	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
-	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
-	TextureManager::GetInstance()->LoadTexture("Resources/fruit_suika_red.png");
+	camera = std::make_unique<Camera>();
+	camera->Initialize();
 
-	sprite = std::make_unique<Sprite>();
+	ModelManager::GetInstance()->LoadModel("AL4_Skydome.obj");
+	ModelManager::GetInstance()->LoadModel("AL4_Title.obj");
+	ModelManager::GetInstance()->LoadModel("Enter.obj");
 
-	sprite->Initialize(SpriteCommon::GetInstance(), "Resources/monsterBall.png");
+	// スカイドームのモデル
+	skydome_ = std::make_unique<Object3d>();
+	skydome_->Initialize(Object3dCommon::GetInstance());
+	skydome_->SetModel(ModelManager::GetInstance()->FindModel("AL4_Skydome.obj"));
 
-	sprite->SetTexSize({ 1200.0f,600.0f });
+	// スカイドームの座標
+	skydomeTransform_ = std::make_unique<WorldTransform>();
+	skydomeTransform_->Initialize();
 
-	sprite->SetAnchorPoint({ 0.5f,0.5f });
+	// タイトルのモデル
+	title = std::make_unique<Object3d>();
+	title->Initialize(Object3dCommon::GetInstance());
+	title->SetModel(ModelManager::GetInstance()->FindModel("AL4_Title.obj"));
+	
+	//ModelManager::GetInstance()->FindModel("AL4_Title.obj")->SetEnableLighting(false);
 
-	sprite->SetPosition({ 640.0f,360.0f });
+	// タイトルの座標
+	titleTransform = std::make_unique<WorldTransform>();
+	titleTransform->Initialize();
 
-	sprite->SetSize({ 1280.0f,720.0f });
+	titleTransform->transform.rotate = {1.74f,3.14f,0.0f};
+	enter_ = std::make_unique<Object3d>();
+	enter_->Initialize(Object3dCommon::GetInstance());
+	enter_->SetModel(ModelManager::GetInstance()->FindModel("Enter.obj"));
+	// 
 
-	ModelManager::GetInstance()->LoadModel("axis.obj");
+	enterTrans_ = std::make_unique<WorldTransform>();
+	enterTrans_->Initialize();
+	enterTrans_->transform.rotate = { 1.74f,3.14f,0.0f };
+	enterTrans_->transform.translate = { 0.0f,-1.0f,0.0f };
 
-	/*object3d = std::make_unique<Object3d>();
+	// ライトの生成と初期化
+	directionalLight = std::make_unique<DirectionalLight>();
+	directionalLight->Initilaize();
 
-	object3d->Initialize(Object3dCommon::GetInstance());
+	pointLight = std::make_unique<PointLight>();
+	pointLight->Initilize();
 
-	object3d->SetModel("axis.obj");
-
-	object3d->SetCamera(camera.get());*/
-
-	ParticleManager::GetInstance()->CreateParticleGroup("Particle_1", "Resources/circle.png");
-
-
-	particleEmitter_1 = std::make_unique<ParticleEmitter>();
-	particleEmitter_1->Initialize("Particle_1");
-	particleEmitter_1->Emit();
-
-	ParticleManager::GetInstance()->SetBlendMode("Add");
-
-	audio = std::make_unique<Audio>();
-	audio->Initialize();
-	audio->SoundPlay("Resources/Spinning_World.mp3",999);
+	spotLight = std::make_unique<SpotLight>();
+	spotLight->Initialize();
 }
 
 void TitleScene::Finalize()
 {
-	audio->SoundStop("Resources/Spinning_World.mp3");
 }
 
 void TitleScene::Update()
 {
+	camera->Update();
+
 	if (Input::GetInstance()->Triggerkey(DIK_RETURN))
 	{
 		SceneManager::GetInstance()->ChangeScene("GAME");
@@ -58,36 +68,26 @@ void TitleScene::Update()
 		return;
 	}
 
-	sprite->Update();
+	directionalLight->Update();
+	pointLight->Update();
+	spotLight->Update();
 
-	/*Vector3 rotato = object3d->GetRotation();
+	skydomeTransform_->UpdateMatrix();
 
-	rotato.y += 0.02f;
+	titleTransform->UpdateMatrix();
 
-	object3d->SetRotation(rotato);
-
-	Vector3 translate = object3d->GetTranslate();
-
-	translate.z += 0.1f;
-
-	object3d->SetTranslate(translate);
-
-	object3d->Update();*/
-
-	ParticleManager::GetInstance()->Update();
-	particleEmitter_1->Update();
+	enterTrans_->UpdateMatrix();
 }
 
 void TitleScene::Draw()
 {
-
 	Object3dCommon::GetInstance()->SetView();
 
-	//object3d->Draw();
+	skydome_->Draw(*skydomeTransform_.get(), camera->GetViewProjection(), *directionalLight.get(), *pointLight.get(), *spotLight.get());
+
+	title->Draw(*titleTransform.get(), camera->GetViewProjection(), *directionalLight.get(), *pointLight.get(), *spotLight.get());
+
+	enter_->Draw(*enterTrans_.get(), camera->GetViewProjection(), *directionalLight.get(), *pointLight.get(), *spotLight.get());
 
 	SpriteCommon::GetInstance()->SetView();
-
-	//sprite->Draw();
-
-	ParticleManager::GetInstance()->Draw("Resources/circle.png");
 }

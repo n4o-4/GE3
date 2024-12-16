@@ -53,6 +53,8 @@ private:
 
 	Matrix4x4 worldMatrix;
 
+
+
 	/*float fovY;
 	float aspectRation;
 	float nearClip;

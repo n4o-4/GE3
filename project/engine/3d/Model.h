@@ -26,6 +26,8 @@ public:
 	// 描画
 	void Draw(WorldTransform worldTransform);
 
+	void SetEnableLighting(bool flag) { materialData->enableLighting = flag; }
+
 private:
 
 	

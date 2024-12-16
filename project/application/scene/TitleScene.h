@@ -19,13 +19,25 @@ class TitleScene : public BaseScene
 {
 private:
 
-	std::unique_ptr<Sprite> sprite = nullptr;
+	std::unique_ptr<Camera> camera = nullptr;
 
-	//std::unique_ptr<Object3d> object3d = nullptr;
+	// スカイドーム
+	std::unique_ptr<Object3d> skydome_ = nullptr;
+	std::unique_ptr<WorldTransform> skydomeTransform_ = nullptr;
 
-	std::unique_ptr<ParticleEmitter> particleEmitter_1 = nullptr;
+	// タイトル
+	std::unique_ptr<Object3d> title = nullptr;
+	std::unique_ptr<WorldTransform> titleTransform = nullptr;
 
-	std::unique_ptr<Audio> audio = nullptr;
+	// エンターキー
+	std::unique_ptr<Object3d> enter_ = nullptr;
+	std::unique_ptr<WorldTransform> enterTrans_ = nullptr;
+
+	// ライト
+	std::unique_ptr<DirectionalLight> directionalLight = nullptr;
+	std::unique_ptr<PointLight> pointLight = nullptr;
+	std::unique_ptr<SpotLight> spotLight = nullptr;
+
 
 private:
 public: // メンバ関数
