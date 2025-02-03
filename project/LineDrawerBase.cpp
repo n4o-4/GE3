@@ -14,25 +14,25 @@ void LineDrawerBase::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	CreateLineResource();
 
 	CreateLineObject();
+
+	transform.transform.scale = { 1.0f,1.0f,1.0f };
+	transform.transform.rotate = { 0.0f,0.0f,0.0f };
+	transform.transform.translate = { 0.0f,0.0f,0.0f };
 }
 
 void LineDrawerBase::Update()
 {
+	
+
+	ImGui::DragFloat3("object.scale", &transform.transform.scale.x, 0.01f);
+	ImGui::DragFloat3("object.rotate", &transform.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3("object.translate", &transform.transform.translate.x, 0.01f);
+
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.transform.scale, transform.transform.rotate, transform.transform.translate);
+	
+	lineObjects_.begin()->get()->instancingData->matWorld = worldMatrix;
 
-	for (std::list<std::unique_ptr<LineObject>>::iterator iterator = lineObjects_.begin(); iterator != lineObjects_.end();) 
-	{
-		//iterator->get()->instancingData->position[0];
-
-		iterator->get()->indexData[0] = 0;
-		iterator->get()->indexData[1] = 1;
-		iterator->get()->indexData[2] = 1;
-		iterator->get()->indexData[3] = 2;
-		iterator->get()->indexData[4] = 2;
-		iterator->get()->indexData[5] = 3;
-
-		++iterator;
-	}
+	lineObjects_.begin()->get()->instancingData->color = { 0.0f,1.0f,0.0f,1.0f };
 }
 
 void LineDrawerBase::Draw(ViewProjection viewProjection)
@@ -59,7 +59,7 @@ void LineDrawerBase::Draw(ViewProjection viewProjection)
 
 		dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, viewProjection.GetViewProjectionResource()->GetGPUVirtualAddress());
 
-		dxCommon_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		dxCommon_->GetCommandList()->DrawIndexedInstanced(iterator->get()->vertexIndex, 1, 0, 0, 0);
 
 		++iterator;
 	}
@@ -239,6 +239,9 @@ void LineDrawerBase::CreateLineObject()
 	// 新しいラインオブジェクトの生成と初期化
 	std::unique_ptr<LineObject> newObject = std::make_unique<LineObject>();
 
+	newObject->sphere.center = 0.0f;
+	newObject->sphere.radius = 1.0f;
+
 	///----------Vertex----------////
 
 	// vertexResourceの生成
@@ -262,6 +265,8 @@ void LineDrawerBase::CreateLineObject()
 	// indexBufferViewの生成
 	CreateIndexBufferView(newObject.get());
 
+	WriteIndexData(newObject.get());
+
 	///----------Instancing----------////
 
 	// instancingResourceの生成
@@ -274,11 +279,8 @@ void LineDrawerBase::CreateLineObject()
 
 	srvManager_->CreateSRVforStructuredBuffer(newObject->srvIndex, newObject->instancingResource.Get(), kMaxLines, sizeof(LineForGPU));
 
-	// 仮 VertexData書き込み
-	newObject->vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
-	newObject->vertexData[1].position = { 1.0f,1.0f,0.0f,1.0f };
-	newObject->vertexData[2].position = { -1.0f,1.0f,0.0f,1.0f };
-	newObject->vertexData[3].position = { -1.0f,-1.0f,1.0f,1.0f };
+	// vertexDataの生成
+	CreateSphereVertex(newObject.get());
 
 	lineObjects_.push_back(std::move(newObject));
 }
@@ -287,7 +289,7 @@ void LineDrawerBase::CreateLineObject()
 #pragma region vertexResourceの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> LineDrawerBase::CreateVertexResource()
 {
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(VertexData) * 4);
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(VertexData) * kMaxLines * 2);
 
 	return resource;
 }
@@ -299,7 +301,7 @@ void LineDrawerBase::CreateVertexBufferView(LineObject* object)
 	// VertexBufferViewの生成
 	object->vertexBufferView.BufferLocation = object->vertexResource->GetGPUVirtualAddress();
 
-    object->vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 4);
+    object->vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * kMaxLines * 2);
 
 	object->vertexBufferView.StrideInBytes = sizeof(VertexData);
 }
@@ -308,7 +310,7 @@ void LineDrawerBase::CreateVertexBufferView(LineObject* object)
 #pragma region indexResourceの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> LineDrawerBase::CreateIndexResource()
 {
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * kMaxLines);
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * kMaxLines * 2);
 
 	return resource;
 }
@@ -319,7 +321,7 @@ void LineDrawerBase::CreateIndexBufferView(LineObject* object)
 {
 	object->indexBufferView.BufferLocation = object->indexResource->GetGPUVirtualAddress();
 
-	object->indexBufferView.SizeInBytes = UINT(sizeof(uint32_t) * kMaxLines);
+	object->indexBufferView.SizeInBytes = UINT(sizeof(uint32_t) * kMaxLines * 2);
 
 	object->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 }
@@ -334,4 +336,63 @@ Microsoft::WRL::ComPtr<ID3D12Resource> LineDrawerBase::CreateInstancingResource(
 }
 #pragma endregion instancingResourceの生成
 
+void LineDrawerBase::WriteIndexData(LineObject* lineObject)
+{
+	int vertexIndex = 0;
 
+	for (int i = 0; i < kMaxLines * 2;)
+	{
+		lineObject->indexData[i] = vertexIndex;
+		++i;
+		++vertexIndex;
+
+		lineObject->indexData[i] = vertexIndex;
+		++i;
+	}
+}
+
+void LineDrawerBase::CreateSphereVertex(LineObject* lineObject)
+{
+	// 仮 VertexData書き込み
+
+	int kSubdivision = 24;
+
+	const float kLonEvery = 2.0f * float(std::numbers::pi) / kSubdivision;  // 経度分割1つ分の角度
+	const float kLatEvery = 2.0f * float(std::numbers::pi) / kSubdivision;  // 緯度分割1つ分の角度
+
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -float(std::numbers::pi) / 2.0f + kLatEvery * latIndex;
+
+		// 経度の方向に分割 0 ~ 2π
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;
+
+			Vector3 a, b, c;
+
+			a = { lineObject->sphere.radius * cosf(lon) * cosf(lat) + lineObject->sphere.center.x,
+				  lineObject->sphere.radius * sinf(lon) + lineObject->sphere.center.y,
+				  lineObject->sphere.radius * cosf(lon) * sinf(lat) + lineObject->sphere.center.z };
+
+			b = { lineObject->sphere.radius * cosf(lon + kLonEvery) * cosf(lat) + lineObject->sphere.center.x,
+				  lineObject->sphere.radius * sinf(lon + kLonEvery) + lineObject->sphere.center.y,
+				  lineObject->sphere.radius * cosf(lon + kLonEvery) * sinf(lat) + lineObject->sphere.center.z };
+
+			c = { lineObject->sphere.radius * cosf(lon) * cosf(lat + kLatEvery) + lineObject->sphere.center.x,
+				  lineObject->sphere.radius * sinf(lon) + lineObject->sphere.center.y,
+				  lineObject->sphere.radius * cosf(lon) * sinf(lat + kLatEvery) +lineObject->sphere.center.z };
+
+			// 頂点データに線の始点と終点を追加
+			lineObject->vertexData[lineObject->vertexIndex].position = { a.x,a.y,a.z,1.0f };
+			++lineObject->vertexIndex;
+
+			lineObject->vertexData[lineObject->vertexIndex].position = { b.x,b.y,b.z,1.0f };
+			++lineObject->vertexIndex;
+
+			lineObject->vertexData[lineObject->vertexIndex].position = { b.x,b.y,b.z,1.0f };
+			++lineObject->vertexIndex;
+
+			lineObject->vertexData[lineObject->vertexIndex].position = { c.x,c.y,c.z,1.0f };
+			++lineObject->vertexIndex;
+		}
+	}
+}

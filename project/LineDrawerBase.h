@@ -9,6 +9,12 @@ class LineDrawerBase
 {
 private:
 
+	struct Sphere {
+		Vector3 center;
+		float radius;
+		unsigned int color;
+	};
+
 	static const int kMaxLines = 2048;
 
 	struct Pipeline
@@ -27,7 +33,6 @@ private:
 	struct LineForGPU
 	{
 		Matrix4x4 matWorld;
-		Vector4 position[2];
 		Vector4 color;
 	};
 
@@ -45,8 +50,13 @@ private:
 		LineForGPU* instancingData = nullptr;
 		
 		int32_t srvIndex;
+
+		unsigned int vertexIndex;
+
+		LineDrawerBase::Sphere sphere;
 	};
 
+	
 public: // メンバ関数
 
 	// 初期化
@@ -78,7 +88,9 @@ private: // メンバ関数
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateInstancingResource();
 
-	
+	void WriteIndexData(LineObject* lineObject);
+
+	void CreateSphereVertex(LineObject* lineObject);
 
 private: // メンバ変数
 
@@ -95,6 +107,7 @@ private: // メンバ変数
 	std::list<std::unique_ptr<LineObject>> lineObjects_;
 
 	WorldTransform transform;
+
 
 	uint32_t instanceNum = 0;
 };
