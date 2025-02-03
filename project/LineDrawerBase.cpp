@@ -289,7 +289,7 @@ void LineDrawerBase::CreateLineObject()
 #pragma region vertexResourceの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> LineDrawerBase::CreateVertexResource()
 {
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(VertexData) * kMaxLines * 2);
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = dxCommon_->CreateBufferResource(sizeof(VertexData) * kMaxLines);
 
 	return resource;
 }
@@ -301,7 +301,7 @@ void LineDrawerBase::CreateVertexBufferView(LineObject* object)
 	// VertexBufferViewの生成
 	object->vertexBufferView.BufferLocation = object->vertexResource->GetGPUVirtualAddress();
 
-    object->vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * kMaxLines * 2);
+    object->vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * kMaxLines);
 
 	object->vertexBufferView.StrideInBytes = sizeof(VertexData);
 }
